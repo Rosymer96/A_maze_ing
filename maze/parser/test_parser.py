@@ -1,7 +1,7 @@
 from config_parser import parse_config, ConfigError
 
 
-def main():
+def main() -> None:
     config_path = "config.txt"
 
     try:
