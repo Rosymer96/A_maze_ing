@@ -54,7 +54,7 @@ def parse_config(file_path: str) -> Config:
                 continue
 
             if "=" not in line:
-                raise ConfigError(f"Syntax error line {line_num}")
+                raise ConfigError(f"Syntax error in line {line_num}")
 
             key, value = line.split("=", 1)
             key = key.strip().upper()
@@ -84,7 +84,7 @@ def parse_config(file_path: str) -> Config:
                 seed = parse_int(value, "SEED", line_num)
 
             else:
-                raise ConfigError(f"Unknown key '{key}' line {line_num}")
+                raise ConfigError(f"Unknown key '{key}' in line {line_num}")
 
     if width is None:
         raise ConfigError("Missing WIDTH in config.txt")
@@ -137,27 +137,56 @@ def parse_int(value: str, key: str, line: int) -> int:
         ConfigError: If the value is not a valid integer.
     """
     if not value.isdigit():
-        raise ConfigError(f"{key} must be integer line {line}")
+        raise ConfigError(f"{key} must be integer in line {line}")
     return int(value)
 
 
-def parse_coords(value: str, key: str, line: int) -> Tuple[int, int]:
+def parse_coords(
+    value: str,
+    key: str,
+    line: int
+) -> tuple[int, int]:
     """
-    Parse a coordinate string in the format 'x,y'.
+    Parse coordinate string "x,y" into tuple.
 
-    Args:
-        value (str): Coordinate string (e.g. "3,5").
-        key (str): Configuration key name (used for error messages).
-        line (int): Line number in the config file.
+    Parameters
+    ----------
+    value : str
+        Coordinate string (e.g. "3,5").
+    key : str
+        Configuration key name.
+    line : int
+        Line number in config file.
 
-    Returns:
-        tuple[int, int]: Parsed (x, y) coordinates.
+    Returns
+    -------
+    tuple[int, int]
+        Parsed (x, y) coordinates.
 
-    Raises:
-        ConfigError: If the format is invalid or values are not integers.
+    Raises
+    ------
+    ConfigError
+        If format is invalid or values are not integers.
     """
+    parts = value.split(",")
+
+    if len(parts) != 2:
+        raise ConfigError(
+            f"{key} must follow format x,y in line {line}"
+        )
+
+    x_str, y_str = parts
+    if not x_str.strip() or not y_str.strip():
+        raise ConfigError(
+            f"{key} must follow format x,y in line {line}"
+        )
+
     try:
-        x, y = value.split(",")
-        return int(x), int(y)
-    except ValueError as e:
-        raise ConfigError(f"{key} must be x,y line {line}") from e
+        x = int(x_str)
+        y = int(y_str)
+    except ValueError as exc:
+        raise ConfigError(
+            f"{key} coordinates must be integers "
+            f"line {line}"
+        ) from exc
+    return x, y
