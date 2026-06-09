@@ -13,6 +13,8 @@ class Cell:
     is_exit: bool = False
     is_path: bool = False
     is_pattern42: bool = False
+    distance: int = -1
+    parent: tuple[int, int] | None = None
 
 
 class Grid:
