@@ -9,8 +9,8 @@ class RenderTheme:
 
     path: str = "\033[96m·\033[0m"
 
-    entry: str = "\033[92mE\033[0m"
-    exit: str = "\033[91mX\033[0m"
+    entry: str = "\033[92m█\033[0m"
+    exit: str = "\033[91m█\033[0m"
 
     pattern42: str = "\033[95m█\033[0m"
 
@@ -44,10 +44,8 @@ class AsciiRenderer:
         return self.theme.empty
 
     def render(self, grid: Grid) -> str:
-    # Cada celda ocupa 2 chars de ancho × 1 char de alto
-    # Canvas: width = cols*2+1 (paredes), height = rows*2+1
-        width  = grid.width  * 3 + 1   # 2 chars celda + 1 pared
-        height = grid.height * 2 + 1   # 1 char celda + 1 pared
+        width = grid.width * 3 + 1
+        height = grid.height * 2 + 1
 
         canvas = [
             [self.theme.wall for _ in range(width)]
@@ -58,17 +56,16 @@ class AsciiRenderer:
             for x in range(grid.width):
                 cell = grid.get_cell(x, y)
 
-                cx = x * 3 + 1   # columna izquierda del interior (2 chars)
-                cy = y * 2 + 1   # fila del interior (1 char)
+                cx = x * 3 + 1
+                cy = y * 2 + 1
 
-                # Interior de la celda: 2 chars de ancho, 1 de alto
-                canvas[cy][cx]     = self.theme.empty
-                canvas[cy][cx + 1] = self.theme.empty
+                tile = self._cell_tile(cell)  # calcular una sola vez
 
-                # Tile en el primer char del centro
-                canvas[cy][cx] = self._cell_tile(cell)
+                # Interior: aplicar el tile a los 2 chars
+                canvas[cy][cx]     = tile
+                canvas[cy][cx + 1] = tile
 
-                # Norte / Sur: abrir 2 chars de ancho
+                # Norte/Sur
                 if not cell.north:
                     canvas[cy - 1][cx]     = self.theme.empty
                     canvas[cy - 1][cx + 1] = self.theme.empty
@@ -77,11 +74,11 @@ class AsciiRenderer:
                     canvas[cy + 1][cx]     = self.theme.empty
                     canvas[cy + 1][cx + 1] = self.theme.empty
 
-                # Oeste / Este: 1 char de alto (ya es 1)
+                # Oeste / Este
                 if not cell.west:
                     canvas[cy][cx - 1] = self.theme.empty
 
                 if not cell.east:
-                    canvas[cy][cx + 2] = self.theme.empty   # justo después de los 2 chars
+                    canvas[cy][cx + 2] = self.theme.empty
 
         return "\n".join("".join(row) for row in canvas)
