@@ -1,4 +1,4 @@
-from maze.models.grid_cell import Grid
+from maze.models.grid_cell import Grid, Cell
 
 
 class AsciiRenderer:
