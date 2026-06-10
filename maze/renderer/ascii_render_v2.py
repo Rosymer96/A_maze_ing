@@ -7,7 +7,7 @@ class RenderTheme:
     wall: str = "\033[93m█\033[0m"
     empty: str = " "
 
-    path: str = "\033[96m·\033[0m"
+    path: str = "\033[96m█\033[0m"
 
     entry: str = "\033[92m█\033[0m"
     exit: str = "\033[91m█\033[0m"
@@ -44,8 +44,10 @@ class AsciiRenderer:
         return self.theme.empty
 
     def render(self, grid: Grid) -> str:
-        width = grid.width * 3 + 1
-        height = grid.height * 2 + 1
+    # 2 chars celda + 1 pared en X
+    # 2 chars celda + 1 pared en Y  (×2 para compensar ratio char)
+        width  = grid.width  * 4 + 1
+        height = grid.height * 3 + 1  # ← cambia de *2+1 a *3+1
 
         canvas = [
             [self.theme.wall for _ in range(width)]
@@ -56,29 +58,33 @@ class AsciiRenderer:
             for x in range(grid.width):
                 cell = grid.get_cell(x, y)
 
-                cx = x * 3 + 1
-                cy = y * 2 + 1
+                cx = x * 4 + 1
+                cy = y * 3 + 1  # ← *3 en lugar de *2
 
-                tile = self._cell_tile(cell)  # calcular una sola vez
+                tile = self._cell_tile(cell)
 
-                # Interior: aplicar el tile a los 2 chars
-                canvas[cy][cx]     = tile
-                canvas[cy][cx + 1] = tile
+                for dy in range(2):
+                    for dx in range(3):
+                        canvas[cy + dy][cx + dx] = tile
 
-                # Norte/Sur
+                # Norte
                 if not cell.north:
-                    canvas[cy - 1][cx]     = self.theme.empty
-                    canvas[cy - 1][cx + 1] = self.theme.empty
+                    for dx in range(3):
+                        canvas[cy - 1][cx + dx] = self.theme.empty
 
+                # Sur
                 if not cell.south:
-                    canvas[cy + 1][cx]     = self.theme.empty
-                    canvas[cy + 1][cx + 1] = self.theme.empty
+                    for dx in range(3):
+                        canvas[cy + 2][cx + dx] = self.theme.empty
 
-                # Oeste / Este
+                # Oeste
                 if not cell.west:
-                    canvas[cy][cx - 1] = self.theme.empty
+                    canvas[cy][cx - 1]     = self.theme.empty
+                    canvas[cy + 1][cx - 1] = self.theme.empty
 
+                # Este
                 if not cell.east:
-                    canvas[cy][cx + 2] = self.theme.empty
+                    canvas[cy][cx + 3]     = self.theme.empty
+                    canvas[cy + 1][cx + 3] = self.theme.empty
 
         return "\n".join("".join(row) for row in canvas)
