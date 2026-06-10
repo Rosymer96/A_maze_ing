@@ -42,12 +42,19 @@ class AsciiRenderer:
             return self.theme.pattern42
 
         return self.theme.empty
+    
+    def _wall_tile(self, cell, neighbor) -> str:
+        """Devuelve el tile para la pared entre cell y neighbor."""
+        if (self.show_path 
+            and cell.is_path 
+            and neighbor is not None 
+            and neighbor.is_path):
+            return self.theme.path
+        return self.theme.empty
 
     def render(self, grid: Grid) -> str:
-    # 2 chars celda + 1 pared en X
-    # 2 chars celda + 1 pared en Y  (×2 para compensar ratio char)
         width  = grid.width  * 4 + 1
-        height = grid.height * 3 + 1  # ← cambia de *2+1 a *3+1
+        height = grid.height * 3 + 1
 
         canvas = [
             [self.theme.wall for _ in range(width)]
@@ -59,7 +66,7 @@ class AsciiRenderer:
                 cell = grid.get_cell(x, y)
 
                 cx = x * 4 + 1
-                cy = y * 3 + 1  # ← *3 en lugar de *2
+                cy = y * 3 + 1
 
                 tile = self._cell_tile(cell)
 
@@ -69,22 +76,30 @@ class AsciiRenderer:
 
                 # Norte
                 if not cell.north:
+                    neighbor = grid.get_cell(x, y - 1) if y > 0 else None
+                    wall = self._wall_tile(cell, neighbor)
                     for dx in range(3):
-                        canvas[cy - 1][cx + dx] = self.theme.empty
+                        canvas[cy - 1][cx + dx] = wall
 
                 # Sur
                 if not cell.south:
+                    neighbor = grid.get_cell(x, y + 1) if y < grid.height - 1 else None
+                    wall = self._wall_tile(cell, neighbor)
                     for dx in range(3):
-                        canvas[cy + 2][cx + dx] = self.theme.empty
+                        canvas[cy + 2][cx + dx] = wall
 
                 # Oeste
                 if not cell.west:
-                    canvas[cy][cx - 1]     = self.theme.empty
-                    canvas[cy + 1][cx - 1] = self.theme.empty
+                    neighbor = grid.get_cell(x - 1, y) if x > 0 else None
+                    wall = self._wall_tile(cell, neighbor)
+                    canvas[cy][cx - 1]     = wall
+                    canvas[cy + 1][cx - 1] = wall
 
                 # Este
                 if not cell.east:
-                    canvas[cy][cx + 3]     = self.theme.empty
-                    canvas[cy + 1][cx + 3] = self.theme.empty
+                    neighbor = grid.get_cell(x + 1, y) if x < grid.width - 1 else None
+                    wall = self._wall_tile(cell, neighbor)
+                    canvas[cy][cx + 3]     = wall
+                    canvas[cy + 1][cx + 3] = wall
 
         return "\n".join("".join(row) for row in canvas)
