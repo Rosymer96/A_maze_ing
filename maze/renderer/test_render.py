@@ -4,7 +4,7 @@ from maze.renderer.pattern_42 import apply_pattern_42
 
 
 def build_test_maze() -> Grid:
-    g = Grid(15, 11)
+    g = Grid(20, 15)
 
     #
     # ENTRADA
@@ -29,13 +29,13 @@ def build_test_maze() -> Grid:
         (4, 2),
         (5, 2),
         (6, 2),
-        (6, 3),
-        (6, 4),
-        (7, 4),
-        (8, 4),
-        (9, 4),
-        (10, 4),
-        (11, 4),
+        (7, 2),
+        (8, 2),
+        (9, 2),
+        (10, 2),
+        (11, 2),
+        (12, 2),
+        (12, 3),
         (12, 4),
         (13, 4),
         (14, 4),
