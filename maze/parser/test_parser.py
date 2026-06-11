@@ -1,4 +1,4 @@
-from config_parser import parse_config, ConfigError
+from .config_parser import parse_config, ConfigError
 
 
 def main() -> None:

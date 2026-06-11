@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from maze.models.grid_cell import Grid
 
 
 @dataclass
@@ -12,7 +11,21 @@ class RenderTheme:
     entry: str = "\033[92m█\033[0m"
     exit: str = "\033[91m█\033[0m"
 
-    pattern42: str = "\033[37m█\033[0m"
+    pattern42: str = "\033[m█\033[0m"
+
+    @staticmethod
+    def classic() -> "RenderTheme":
+        return RenderTheme()
+
+    @staticmethod
+    def neon() -> "RenderTheme":
+        return RenderTheme(
+            wall="\033[32m█\033[0m",
+            path="\033[94m█\033[0m",
+            entry="\033[91m█\033[0m",
+            exit="\033[93m█\033[0m",
+            pattern42="\033[95m█\033[0m",
+        )
 
 
 class AsciiRenderer:
@@ -22,84 +35,103 @@ class AsciiRenderer:
         theme: RenderTheme | None = None,
         show_path: bool = True,
         show_42: bool = True,
+        path: list[tuple[int, int]] | None = None,
     ):
         self.theme = theme or RenderTheme()
         self.show_path = show_path
         self.show_42 = show_42
+        self._path_set: set[tuple[int, int]] = set(path) if path else set()
 
-    def _cell_tile(self, cell) -> str:
+    def set_theme(self, theme: RenderTheme) -> None:
+        """Cambia el tema en caliente."""
+        self.theme = theme
+    
+    def set_path(self, path: list[tuple[int, int]]) -> None:
+        """Actualiza el path de solución."""
+        self._path_set = set(path)
 
-        if cell.is_entry:
+    def _cell_tile(
+        self,
+        bits: int,
+        x: int,
+        y: int,
+        entry: tuple[int, int],
+        exit_: tuple[int, int],
+    ) -> str:
+        if (x, y) == entry:
             return self.theme.entry
 
-        if cell.is_exit:
+        if (x, y) == exit_:
             return self.theme.exit
 
-        if self.show_path and cell.is_path:
+        if self.show_path and (x, y) in self._path_set:
             return self.theme.path
 
-        if self.show_42 and cell.is_pattern42:
+        if self.show_42 and bits == 15:
             return self.theme.pattern42
 
         return self.theme.empty
     
-    def _wall_tile(self, cell, neighbor) -> str:
-        """Devuelve el tile para la pared entre cell y neighbor."""
-        if (self.show_path 
-            and cell.is_path 
-            and neighbor is not None 
-            and neighbor.is_path):
+    def _wall_tile(self, x1: int, y1: int, x2: int, y2: int) -> str:
+        """Pared entre dos celdas — path color si ambas son path."""
+        if (self.show_path
+                and (x1, y1) in self._path_set
+                and (x2, y2) in self._path_set):
             return self.theme.path
         return self.theme.empty
 
-    def render(self, grid: Grid) -> str:
-        width = grid.width * 4 + 1
-        height = grid.height * 3 + 1
+    def render(
+        self,
+        my_map: list[list[int]],
+        entry: tuple[int, int],
+        exit_: tuple[int, int],
+    ) -> str:
+        height = len(my_map)
+        width = len(my_map[0])
+
+        canvas_w = width * 3 + 1
+        canvas_h = height * 3 + 1
 
         canvas = [
-            [self.theme.wall for _ in range(width)]
-            for _ in range(height)
+            [self.theme.wall for _ in range(canvas_w)]
+            for _ in range(canvas_h)
         ]
 
-        for y in range(grid.height):
-            for x in range(grid.width):
-                cell = grid.get_cell(x, y)
+        for y in range(height):
+            for x in range(width):
+                bits = my_map[y][x]
 
-                cx = x * 4 + 1
+                cx = x * 3 + 1
                 cy = y * 3 + 1
 
-                tile = self._cell_tile(cell)
+                tile = self._cell_tile(bits, x, y, entry, exit_)
 
                 for dy in range(2):
-                    for dx in range(3):
+                    for dx in range(2):
                         canvas[cy + dy][cx + dx] = tile
 
-                # Norte
-                if not cell.north:
-                    neighbor = grid.get_cell(x, y - 1) if y > 0 else None
-                    wall = self._wall_tile(cell, neighbor)
-                    for dx in range(3):
+                # Norte — bit 0
+                if not (bits & 1):
+                    wall = self._wall_tile(x, y, x, y - 1)
+                    for dx in range(2):
                         canvas[cy - 1][cx + dx] = wall
 
-                # Sur
-                if not cell.south:
-                    neighbor = grid.get_cell(x, y + 1) if y < grid.height - 1 else None
-                    wall = self._wall_tile(cell, neighbor)
-                    for dx in range(3):
+                # Este — bit 1
+                if not (bits & 2):
+                    wall = self._wall_tile(x, y, x + 1, y)
+                    canvas[cy][cx + 2] = wall
+                    canvas[cy + 1][cx + 2] = wall
+
+                # Sur — bit 2
+                if not (bits & 4):
+                    wall = self._wall_tile(x, y, x, y + 1)
+                    for dx in range(2):
                         canvas[cy + 2][cx + dx] = wall
 
-                # Oeste
-                if not cell.west:
-                    neighbor = grid.get_cell(x - 1, y) if x > 0 else None
-                    wall = self._wall_tile(cell, neighbor)
-                    canvas[cy][cx - 1]     = wall
+                # Oeste — bit 3
+                if not (bits & 8):
+                    wall = self._wall_tile(x, y, x - 1, y)
+                    canvas[cy][cx - 1] = wall
                     canvas[cy + 1][cx - 1] = wall
 
-                # Este
-                if not cell.east:
-                    neighbor = grid.get_cell(x + 1, y) if x < grid.width - 1 else None
-                    wall = self._wall_tile(cell, neighbor)
-                    canvas[cy][cx + 3]     = wall
-                    canvas[cy + 1][cx + 3] = wall
-
-        return "\n".join("".join(row) for row in canvas)
+        return "\n".join("".join(row) for row in canvas) + "\n"
