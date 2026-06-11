@@ -4,15 +4,15 @@ from maze.models.grid_cell import Grid
 
 @dataclass
 class RenderTheme:
-    wall: str = "\033[93m█\033[0m"
+    wall: str = "\033[94m█\033[0m"
     empty: str = " "
 
-    path: str = "\033[96m█\033[0m"
+    path: str = "\033[35m█\033[0m"
 
     entry: str = "\033[92m█\033[0m"
     exit: str = "\033[91m█\033[0m"
 
-    pattern42: str = "\033[95m█\033[0m"
+    pattern42: str = "\033[37m█\033[0m"
 
 
 class AsciiRenderer:
@@ -53,7 +53,7 @@ class AsciiRenderer:
         return self.theme.empty
 
     def render(self, grid: Grid) -> str:
-        width  = grid.width  * 4 + 1
+        width = grid.width * 4 + 1
         height = grid.height * 3 + 1
 
         canvas = [
