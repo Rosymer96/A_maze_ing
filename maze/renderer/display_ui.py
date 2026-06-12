@@ -1,6 +1,7 @@
 import os
 from maze.renderer import AsciiRenderer, RenderTheme
 from maze.parser import Config
+from maze.solver import MazeSolver
 
 # ── Datos de prueba ─────────────────────────────────────────────────
 # Cuando tengas maze_generator, reemplaza _parse_raw(_RAW) en run() por:
@@ -48,23 +49,6 @@ def _parse_raw(raw: str) -> list[list[int]]:
     return my_map
 
 
-def _build_path(
-        entry: tuple[int, int],
-        path_str: str) -> list[tuple[int, int]]:
-    """Convierte la cadena de direcciones en lista de coordenadas.
-
-    PLACEHOLDER: desaparece cuando el solver devuelva las coordenadas .
-    """
-    coords = [entry]
-    cx, cy = entry
-    for ch in path_str:
-        dx, dy = directions[ch]
-        cx, cy = cx + dx, cy + dy
-        coords.append((cx, cy))
-    return coords
-
-# ── Helpers de UI ─────────────────────────────────────────────
-
 
 def clear_screen() -> None:
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -78,7 +62,7 @@ def display_maze(
         error_msg: str = "", 
 ) -> None:
     "Render the maze and print it to the console also the menu."
-    clear_screen()
+    #clear_screen()
     print(renderer.render(my_map, entry, exit_))
     print("\033[1;93m" + "═" * 35 + "\033[0m")
     print("\033[1;93m   === Ａ－Ｍａｚｅ－ｉｎｇ ===\033[0m")
@@ -105,7 +89,11 @@ def run(config: Config) -> None:
     #   path_coords → solver.solve(my_map, config.entry, config.exit)
     my_map = _parse_raw(RAW)  # Placeholder para el mapa generado
     print("MY_MAP:", my_map)  # Debug: muestra el mapa en consola
-    path_coords = _build_path(config.entry, path_str)
+    solver = MazeSolver()
+    path_coords, path_str = solver.solve(my_map, config.entry, config.exit)
+    print(f"Camino: {path_str}")
+    print(f"Pasos:  {len(path_coords)}")
+    #path_coords = _build_path(config.entry, path_str)
 
     renderer = AsciiRenderer(
         theme=themes[theme_index],
@@ -127,6 +115,7 @@ def run(config: Config) -> None:
         elif choice == "3":
             theme_index = (theme_index + 1) % len(themes)
             renderer.set_theme(themes[theme_index])
+            
         elif choice == "4":
             clear_screen()
             print("¡Gracias por jugar a A-Maze-ing!")

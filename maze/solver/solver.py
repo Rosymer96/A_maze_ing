@@ -26,7 +26,7 @@ class MazeSolver:
         
         parent: dict[tuple[int, int], tuple[int, int] | None] = {}
         path: deque[tuple[int, int]] = deque([entry])
-        visited[[entry[1]][entry[0]]] = True
+        visited[entry[1]][entry[0]] = True
         parent[entry] = None
         #Definir los caminos 
         directions = [
@@ -37,22 +37,58 @@ class MazeSolver:
         ]
         #Solver BFS
 
+        found = False
+        while path:
+            cx, cy = path.popleft()
+            if (cx, cy) == exit:
+                found = True
+                break
 
+            bits = my_map[cy][cx]
 
+            for bit, dx, dy, _ in directions:
+                nx, ny = cx + dx, cy + dy
+            
+            #Verificar si esta en el mapa
+                if not (0 <= nx < width and 0<= ny < height):
+                    continue
 
+                #Verificar si ya esta visitada
+                if visited[ny][nx]:
+                    continue
 
-    
+                #hay pared en esa direccion:
+                if bits & bit:
+                    continue
 
+            #Si la siguiente celda es accesible
+                visited[ny][nx] = True
+                parent[(nx, ny)] = (cx, cy)
+                path.append((nx, ny))
+        
+    #   Camino hacia atras
+        if not found:
+            return [], ""
+        
+        coords: list[tuple[int, int]] = []
+        current: tuple[int, int] | None = exit
 
+        while current is not None:
+            coords.append(current)
+            current = parent.get(current)
+        
+        coords.reverse()
 
+        #Convertir a coordenadas
+        letters: list[str] = []
+        for i in range(len(coords) - 1):
+            x1, y1 = coords[i]
+            x2, y2 = coords[i + 1]
+            dx, dy = x2 - x1, y2 - y1
 
-
-
-def main():
-    solver = MazeSolver()
-    print(solver.solve([[1, 4, 6], [2, 5, 8]]))
-
-
-
-if __name__ == "__main__":
-    main()
+            for _, ddx, ddy, letter in directions:
+                if ddx == dx and ddy == dy:
+                    letters.append(letter)
+                    break
+        
+        return coords, "".join(letters)
