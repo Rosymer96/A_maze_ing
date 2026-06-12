@@ -1,0 +1,113 @@
+from collections import deque
+
+
+class MazeSolver:
+
+    def solve(
+        self,
+        my_map: list[list[int]],
+        entry: tuple[int, int],
+        exit_: tuple[int, int],
+    ) -> tuple[list[tuple[int, int]], str]:
+        """
+        Encuentra el camino más corto de entry a exit usando BFS.
+
+        Args:
+            my_map: laberinto en bitmask
+            entry:  coordenadas de entrada (x, y)
+            exit_:  coordenadas de salida (x, y)
+
+        Returns:
+            (coords, path_str)
+            coords:   lista de (x,y) del camino
+            path_str: string "SSWNEE..." para el fichero
+        """
+
+        height = len(my_map)
+        width  = len(my_map[0])
+
+        # --- PASO 1: preparar estructuras ---
+
+        # visited[y][x] = True si ya hemos pasado por esa celda
+        visited: list[list[bool]] = [
+            [False] * width for _ in range(height)
+        ]
+
+        # parent[(x,y)] = (px,py) — de dónde vine para llegar a (x,y)
+        # nos permite reconstruir el camino al final
+        parent: dict[tuple[int, int], tuple[int, int] | None] = {}
+
+        # cola BFS — empieza con la celda de entrada
+        queue: deque[tuple[int, int]] = deque([entry])
+        visited[entry[1]][entry[0]] = True
+        parent[entry] = None  # la entrada no tiene padre
+
+        # direcciones posibles: (bit_que_bloquea, dx, dy, letra)
+        # si el bit está activo → pared cerrada → NO puedes pasar
+        directions = [
+            (1,  0, -1, 'N'),   # Norte: bit 0, mueve y-1
+            (2,  1,  0, 'E'),   # Este:  bit 1, mueve x+1
+            (4,  0,  1, 'S'),   # Sur:   bit 2, mueve y+1
+            (8, -1,  0, 'W'),   # Oeste: bit 3, mueve x-1
+        ]
+
+        # --- PASO 2: BFS ---
+
+        found = False
+        while queue:
+            cx, cy = queue.popleft()  # celda actual
+
+            if (cx, cy) == exit_:
+                found = True
+                break
+
+            bits = my_map[cy][cx]
+
+            for bit, dx, dy, _ in directions:
+                nx, ny = cx + dx, cy + dy
+
+                # ¿está dentro del mapa?
+                if not (0 <= nx < width and 0 <= ny < height):
+                    continue
+
+                # ¿ya visitada?
+                if visited[ny][nx]:
+                    continue
+
+                # ¿hay pared en esa dirección? (bit activo = pared cerrada)
+                if bits & bit:
+                    continue
+
+                # celda accesible → la añadimos a la cola
+                visited[ny][nx] = True
+                parent[(nx, ny)] = (cx, cy)
+                queue.append((nx, ny))
+
+        # --- PASO 3: reconstruir el camino hacia atrás ---
+
+        if not found:
+            return [], ""  # no hay camino (no debería pasar en laberinto perfecto)
+
+        coords: list[tuple[int, int]] = []
+        current: tuple[int, int] | None = exit_
+
+        while current is not None:
+            coords.append(current)
+            current = parent.get(current)
+
+        coords.reverse()  # de exit→entry a entry→exit
+
+        # --- PASO 4: convertir coords a letras N/E/S/W ---
+
+        letters: list[str] = []
+        for i in range(len(coords) - 1):
+            x1, y1 = coords[i]
+            x2, y2 = coords[i + 1]
+            dx, dy = x2 - x1, y2 - y1
+
+            for _, ddx, ddy, letter in directions:
+                if ddx == dx and ddy == dy:
+                    letters.append(letter)
+                    break
+
+        return coords, "".join(letters)
