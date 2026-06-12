@@ -45,9 +45,9 @@ class AsciiRenderer:
     def set_theme(self, theme: RenderTheme) -> None:
         """Cambia el tema en caliente."""
         self.theme = theme
-    
+
     def set_path(self, path: list[tuple[int, int]]) -> None:
-        """Actualiza el path de solución."""
+        """Actualiza el path de solución, al llamar al solver"""
         self._path_set = set(path)
 
     def _cell_tile(
@@ -71,7 +71,7 @@ class AsciiRenderer:
             return self.theme.pattern42
 
         return self.theme.empty
-    
+
     def _wall_tile(self, x1: int, y1: int, x2: int, y2: int) -> str:
         """Pared entre dos celdas — path color si ambas son path."""
         if (self.show_path

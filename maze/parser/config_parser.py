@@ -36,7 +36,7 @@ def parse_config(file_path: str) -> Config:
     """
 
     if not os.path.exists(file_path):
-        raise ConfigError(f"File not found: {file_path}")
+        raise ConfigError(f"File not found: {file_path}, use config.txt")
 
     width: int | None = None
     height: int | None = None
