@@ -36,7 +36,6 @@ class MazeGenerator:
         )
 
         if pattern_applied:
-            # ── Protección: entry/exit no pueden caer dentro del patrón ──
             ex, ey = self.entry
             xx, xy = self.exit
             if my_visited[ey][ex]:
