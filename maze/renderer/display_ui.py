@@ -1,5 +1,5 @@
 import os
-from maze.renderer.ascii_render_v3 import AsciiRenderer, RenderTheme
+from maze.renderer.ascii_render import AsciiRenderer, RenderTheme
 from maze.parser.config_parser import Config
 from maze.generator.maze_generator import MazeGenerator
 
@@ -23,7 +23,7 @@ def _convert_and_solve(config: Config, renderer: AsciiRenderer, use_seed: bool =
             row.append(int(maze_obj.grid[y][x].walls.value))
         my_map.append(row)
 
-    import maze.pattern_42 as pattern_42
+    import maze.utils.pattern_42 as pattern_42
     temp_visited = [[False for _ in range(config.width)]
                     for _ in range(config.height)]
     pattern_42.apply_pattern_42(
