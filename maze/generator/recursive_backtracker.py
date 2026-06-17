@@ -34,28 +34,17 @@ class RecursiveBacktracker:
         current_cell.visited = True
         stack: List[Cells] = []
 
-<<<<<<< HEAD
-=======
     # El bucle continuará hasta que hayamos visitado todo y la pila vuelva
-    # a estar vacía
->>>>>>> dev-rosvela-solver
         while True:
             unvisited = self._get_unvisited_neighbors(current_cell)
 
             if unvisited:
-<<<<<<< HEAD
-                direction, next_cell = random.choice(unvisited)
-=======
                 # Paso A: Elegir un vecino al azar
                 direction, next_cell = self.rng.choice(unvisited)
->>>>>>> dev-rosvela-solver
 
                 stack.append(current_cell)
 
-<<<<<<< HEAD
-=======
     # Paso C: ¡Romper las paredes en ambas celdas para mantener la coherencia!
->>>>>>> dev-rosvela-solver
                 current_cell.remove_wall(direction)
                 next_cell.remove_wall(OPPOSITE_WALL[direction])
 
@@ -67,8 +56,4 @@ class RecursiveBacktracker:
                 current_cell = stack.pop()
 # Si no hay vecinas libres y la pila está vacía... ¡Laberinto terminado!
             else:
-<<<<<<< HEAD
-=======
-
->>>>>>> dev-rosvela-solver
                 break

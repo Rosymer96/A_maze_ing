@@ -16,12 +16,6 @@ class HexExporter:
             for x in range(self.maze.width):
                 cell = self.maze.grid[y][x]
 
-<<<<<<< HEAD
-                hex_char = hex(cell.walls.value)[2:]
-
-                hex_chars.append(hex_char)
-
-=======
                 # El valor de cell.walls ya es un entero gracias a IntFlag
                 #  (ej. 15 para ALL)
                 # La función nativa hex() de Python transforma un entero a hex
@@ -33,7 +27,6 @@ class HexExporter:
                 hex_chars.append(hex_char)
             hex_chars.append("\n")
         # Unimos todos los caracteres en una sola línea continua sin espacios
->>>>>>> dev-rosvela-solver
         return "".join(hex_chars)
 
     def write(
