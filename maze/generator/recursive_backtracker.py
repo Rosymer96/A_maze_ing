@@ -13,13 +13,11 @@ class RecursiveBacktracker:
         """Busca todas las celdas vecinas que aún no han sido visitadas."""
         neighbors: List[Tuple[Wall, Cells]] = []
 
-        # Revisamos las 4 direcciones posibles (NORTH, EAST, SOUTH, WEST)
         for direction, (dx, dy) in MOVES.items():
             next_x = cells.x + dx
             next_y = cells.y + dy
 
             neighbor = self.maze.get_cell(next_x, next_y)
-            # Si el vecino existe dentro del mapa y NO ha sido visitado...
             if neighbor and not neighbor.visited:
                 neighbors.append((direction, neighbor))
 
@@ -27,35 +25,26 @@ class RecursiveBacktracker:
 
     def run(self) -> None:
         """Ejecuta el algoritmo para esculpir el laberinto perfecto."""
-        # Empezamos el explorador en la celda de entrada (ENTRY)
         start_x, start_y = self.maze.entry
         current_cell = self.maze.grid[start_y][start_x]
 
         current_cell.visited = True
         stack: List[Cells] = []
 
-        # El bucle continuará hasta que hayamos visitado todo y la pila vuelva a estar vacía
         while True:
             unvisited = self._get_unvisited_neighbors(current_cell)
 
             if unvisited:
-                # Paso A: Elegir un vecino al azar
                 direction, next_cell = random.choice(unvisited)
 
-                # Paso B: Guardar la celda actual en la pila antes de movernos
                 stack.append(current_cell)
 
-                # Paso C: ¡Romper las paredes en ambas celdas para mantener la coherencia!
                 current_cell.remove_wall(direction)
                 next_cell.remove_wall(OPPOSITE_WALL[direction])
 
-                # Paso D: Avanzar a la siguiente celda y marcarla como visitada
                 next_cell.visited = True
                 current_cell = next_cell
             elif stack:
-                # Si llegamos a un callejón sin salida, hacemos BACKTRACK:
-                # Sacamos la última celda de la pila y regresamos a ella
                 current_cell = stack.pop()
             else:
-                # Si no hay vecinas libres y la pila está vacía... ¡Laberinto terminado!
                 break
