@@ -3,7 +3,7 @@ import random
 from typing import Tuple, Optional
 from maze.models.maze import Maze
 from maze.generator.recursive_backtracker import RecursiveBacktracker
-import maze.pattern_42 as pattern_42
+import maze.utils as pattern_42
 
 
 class MazeGenerator:

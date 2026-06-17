@@ -1,6 +1,5 @@
 import sys
-from maze.parser.config_parser import parse_config, ConfigError
-from maze.renderer import run
+from maze import parse_config, ConfigError, run
 
 
 def main() -> None:
