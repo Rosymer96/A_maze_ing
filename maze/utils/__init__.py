@@ -1,5 +1,5 @@
-from pattern_42 import get_pattern_42, apply_pattern_42
-from constants import Wall, MOVES, OPPOSITE_WALL
+from maze.utils.pattern_42 import get_pattern_42, apply_pattern_42
+from maze.utils.constants import Wall, MOVES, OPPOSITE_WALL
 
 
 __all__ = [
