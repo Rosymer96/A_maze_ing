@@ -10,7 +10,7 @@ class MazeSolver:
     ) -> tuple[list[tuple[int, int]], str]:
         """
         Find the shorest path between entry and exit
-        Args: 
+        Args:
         (completar...)
         """
         height = len(my_map)
@@ -22,19 +22,18 @@ class MazeSolver:
             for _ in range(width):
                 vis += [False]
             visited += [vis]
-        
+
         parent: dict[tuple[int, int], tuple[int, int] | None] = {}
         path: deque[tuple[int, int]] = deque([entry])
         visited[entry[1]][entry[0]] = True
         parent[entry] = None
-        #Definir los caminos 
+
         directions = [
             (1, 0, -1, "N"),
             (2, 1, 0, "E"),
             (4, 0, 1, "S"),
             (8, -1, 0, "O")
         ]
-        #Solver BFS
 
         found = False
         while path:
@@ -47,38 +46,37 @@ class MazeSolver:
 
             for bit, dx, dy, _ in directions:
                 nx, ny = cx + dx, cy + dy
-            
-            #Verificar si esta en el mapa
-                if not (0 <= nx < width and 0<= ny < height):
+
+            # Verificar si esta en el mapa
+                if not (0 <= nx < width and 0 <= ny < height):
                     continue
 
-                #Verificar si ya esta visitada
+                # Verificar si ya esta visitada
                 if visited[ny][nx]:
                     continue
 
-                #hay pared en esa direccion:
+                # hay pared en esa direccion:
                 if bits & bit:
                     continue
 
-            #Si la siguiente celda es accesible
+            # Si la siguiente celda es accesible
                 visited[ny][nx] = True
                 parent[(nx, ny)] = (cx, cy)
                 path.append((nx, ny))
-        
+
     #   Camino hacia atras
         if not found:
             return [], ""
-        
+
         coords: list[tuple[int, int]] = []
         current: tuple[int, int] | None = exit
 
         while current is not None:
             coords.append(current)
             current = parent.get(current)
-        
         coords.reverse()
 
-        #Convertir a coordenadas
+        # Convertir a coordenadas
         letters: list[str] = []
         for i in range(len(coords) - 1):
             x1, y1 = coords[i]
@@ -89,5 +87,4 @@ class MazeSolver:
                 if ddx == dx and ddy == dy:
                     letters.append(letter)
                     break
-        
         return coords, "".join(letters)

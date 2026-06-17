@@ -90,6 +90,61 @@ class AsciiRenderer:
         width = len(my_map[0])
 
         canvas_w = width * 3 + 1
+        canvas_h = height * 2 + 1
+
+        canvas = [
+            [self.theme.wall for _ in range(canvas_w)]
+            for _ in range(canvas_h)
+        ]
+
+        for y in range(height):
+            for x in range(width):
+                bits = my_map[y][x]
+
+                cx = x * 3 + 1
+                cy = y * 2 + 1
+
+                tile = self._cell_tile(bits, x, y, entry, exit_)
+
+                # Interior 1×1
+                canvas[cy][cx] = tile
+                canvas[cy][cx + 1] = tile
+
+                # Norte — bit 0
+                if not (bits & 1):
+                    wall = self._wall_tile(x, y, x, y - 1)
+                    canvas[cy - 1][cx] = wall
+                    canvas[cy - 1][cx + 1] = wall
+
+                # Este — bit 1
+                if not (bits & 2):
+                    wall = self._wall_tile(x, y, x + 1, y)
+                    canvas[cy][cx + 2] = wall
+
+                # Sur — bit 2
+                if not (bits & 4):
+                    wall = self._wall_tile(x, y, x, y + 1)
+                    canvas[cy + 1][cx] = wall
+
+                # Oeste — bit 3
+                if not (bits & 8):
+                    wall = self._wall_tile(x, y, x - 1, y)
+                    canvas[cy][cx - 1] = wall
+
+        return "\n".join("".join(row) for row in canvas) + "\n"
+
+
+'''
+    def render(
+        self,
+        my_map: list[list[int]],
+        entry: tuple[int, int],
+        exit_: tuple[int, int],
+    ) -> str:
+        height = len(my_map)
+        width = len(my_map[0])
+
+        canvas_w = width * 3 + 1
         canvas_h = height * 3 + 1
 
         canvas = [
@@ -135,3 +190,4 @@ class AsciiRenderer:
                     canvas[cy + 1][cx - 1] = wall
 
         return "\n".join("".join(row) for row in canvas) + "\n"
+'''

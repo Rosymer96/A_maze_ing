@@ -1,9 +1,8 @@
 import os
-from maze.renderer.ascii_render_v3 import AsciiRenderer, RenderTheme
-from maze.parser.config_parser import Config
-from maze.generator.maze_generator import MazeGenerator
+from maze.renderer import AsciiRenderer, RenderTheme
+from maze.parser import Config
+from maze.generator import MazeGenerator
 from maze.solver import MazeSolver
-
 
 
 def _convert_and_solve(
@@ -29,12 +28,12 @@ def _convert_and_solve(
             row.append(int(maze_obj.grid[y][x].walls.value))
         my_map.append(row)
 
-    import maze.pattern_42 as pattern_42
+    import maze.utils as pattern_42
     temp_visited = [[False for _ in range(config.width)]
                     for _ in range(config.height)]
     pattern_42.apply_pattern_42(
         my_map, temp_visited, config.width, config.height)
-    
+
     solver = MazeSolver()
     path_coords, path_str = solver.solve(my_map, config.entry, config.exit)
 
@@ -92,7 +91,6 @@ def run(config: Config) -> None:
         elif choice == "3":
             theme_index = (theme_index + 1) % len(themes)
             renderer.set_theme(themes[theme_index])
-            
         elif choice == "4":
             print("¡Gracias por jugar a A-Maze-ing!")
             break
