@@ -20,8 +20,10 @@ class MazeGenerator:
         self.entry: Tuple[int, int] = entry
         self.exit: Tuple[int, int] = exit
 
-        if seed is not None:
-            random.seed(seed)
+        if seed is None:
+            seed = random.randint(1, 999999)
+        self.seed = seed
+        self.rng = random.Random(self.seed)
 
         self.maze: Maze = Maze(self.width, self.height, self.entry, self.exit)
 
@@ -41,6 +43,6 @@ class MazeGenerator:
                         self.maze.grid[y][x].walls = Wall.ALL
 
     def generate(self) -> Maze:
-        algorithm = RecursiveBacktracker(self.maze)
+        algorithm = RecursiveBacktracker(self.maze, self.rng)
         algorithm.run()
         return self.maze

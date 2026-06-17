@@ -16,7 +16,6 @@ class MazeSolver:
         height = len(my_map)
         width = len(my_map[0])
 
-        print(height)
         visited: list[list[bool]] = []
         for _ in range(height):
             vis = []
