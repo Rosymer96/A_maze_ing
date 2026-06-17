@@ -3,6 +3,7 @@ from maze.renderer import AsciiRenderer, RenderTheme
 from maze.parser import Config
 from maze.generator import MazeGenerator
 from maze.solver import MazeSolver
+from maze.exporter import HexExporter
 
 
 def _convert_and_solve(
@@ -31,11 +32,20 @@ def _convert_and_solve(
     import maze.utils as pattern_42
     temp_visited = [[False for _ in range(config.width)]
                     for _ in range(config.height)]
-    pattern_42.apply_pattern_42(
+    pattern = pattern_42.apply_pattern_42(
         my_map, temp_visited, config.width, config.height)
+    if pattern is False:
+        print("\033[1;91mThe maze is too small to include the '42' pattern.\n\033[0m")
 
     solver = MazeSolver()
     path_coords, path_str = solver.solve(my_map, config.entry, config.exit)
+    exporter = HexExporter(maze_obj)
+    exporter.write(
+        output_file=config.output_file,
+        entry=config.entry,
+        exit=config.exit,
+        path_str=path_str
+    )
 
     renderer.set_path(path_coords)
 

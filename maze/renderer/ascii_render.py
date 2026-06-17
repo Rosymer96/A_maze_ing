@@ -11,7 +11,7 @@ class RenderTheme:
     entry: str = "\033[92m█\033[0m"
     exit: str = "\033[91m█\033[0m"
 
-    pattern42: str = "\033[m█\033[0m"
+    pattern42: str = "\033[97m█\033[0m"
 
     @staticmethod
     def classic() -> "RenderTheme":
