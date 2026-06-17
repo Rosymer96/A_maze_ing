@@ -1,8 +1,7 @@
 import random
 from typing import List, Tuple
-from maze.models.maze import Maze
-from maze.models.cells import Cells
-from maze.utils.constants import Wall, MOVES, OPPOSITE_WALL
+from maze.models import Maze, Cells
+from maze.utils import Wall, MOVES, OPPOSITE_WALL
 
 
 class RecursiveBacktracker:
@@ -10,7 +9,10 @@ class RecursiveBacktracker:
         self.maze: Maze = maze
         self.rng = rng
 
-    def _get_unvisited_neighbors(self, cells: Cells) -> List[Tuple[Wall, Cells]]:
+    def _get_unvisited_neighbors(
+        self,
+        cells: Cells
+    ) -> List[Tuple[Wall, Cells]]:
         """Busca todas las celdas vecinas que aún no han sido visitadas."""
         neighbors: List[Tuple[Wall, Cells]] = []
 
@@ -35,7 +37,8 @@ class RecursiveBacktracker:
         current_cell.visited = True
         stack: List[Cells] = []
 
-        # El bucle continuará hasta que hayamos visitado todo y la pila vuelva a estar vacía
+    # El bucle continuará hasta que hayamos visitado todo y la pila vuelva
+    # a estar vacía
         while True:
             unvisited = self._get_unvisited_neighbors(current_cell)
 
@@ -43,21 +46,21 @@ class RecursiveBacktracker:
                 # Paso A: Elegir un vecino al azar
                 direction, next_cell = self.rng.choice(unvisited)
 
-
                 # Paso B: Guardar la celda actual en la pila antes de movernos
                 stack.append(current_cell)
 
-                # Paso C: ¡Romper las paredes en ambas celdas para mantener la coherencia!
+    # Paso C: ¡Romper las paredes en ambas celdas para mantener la coherencia!
                 current_cell.remove_wall(direction)
                 next_cell.remove_wall(OPPOSITE_WALL[direction])
 
                 # Paso D: Avanzar a la siguiente celda y marcarla como visitada
                 next_cell.visited = True
                 current_cell = next_cell
+    # Si llegamos a un callejón sin salida, hacemos BACKTRACK:
+    # Sacamos la última celda de la pila y regresamos a ella
             elif stack:
-                # Si llegamos a un callejón sin salida, hacemos BACKTRACK:
-                # Sacamos la última celda de la pila y regresamos a ella
                 current_cell = stack.pop()
+# Si no hay vecinas libres y la pila está vacía... ¡Laberinto terminado!
             else:
-                # Si no hay vecinas libres y la pila está vacía... ¡Laberinto terminado!
+
                 break
