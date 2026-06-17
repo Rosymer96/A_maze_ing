@@ -35,7 +35,8 @@ def _convert_and_solve(
     pattern = pattern_42.apply_pattern_42(
         my_map, temp_visited, config.width, config.height)
     if pattern is False:
-        print("\033[1;91mThe maze is too small to include the '42' pattern.\n\033[0m")
+        print("\033[1;91mThe maze is too small to include the"
+              " '42' pattern.\n\033[0m")
 
     solver = MazeSolver()
     path_coords, path_str = solver.solve(my_map, config.entry, config.exit)
