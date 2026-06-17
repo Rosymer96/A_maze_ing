@@ -1,10 +1,16 @@
 import os
-from maze.renderer.ascii_render import AsciiRenderer, RenderTheme
-from maze.parser.config_parser import Config
-from maze.generator.maze_generator import MazeGenerator
+from maze.renderer import AsciiRenderer, RenderTheme
+from maze.parser import Config
+from maze.generator import MazeGenerator
+from maze.solver import MazeSolver
+from maze.exporter import HexExporter
 
 
-def _convert_and_solve(config: Config, renderer: AsciiRenderer, use_seed: bool = True) -> list[list[int]]:
+def _convert_and_solve(
+    config: Config,
+    renderer: AsciiRenderer,
+    use_seed: bool = True
+) -> list[list[int]]:
     seed_value = config.seed if use_seed else None
 
     generator = MazeGenerator(
@@ -23,13 +29,25 @@ def _convert_and_solve(config: Config, renderer: AsciiRenderer, use_seed: bool =
             row.append(int(maze_obj.grid[y][x].walls.value))
         my_map.append(row)
 
-    import maze.utils.pattern_42 as pattern_42
+    import maze.utils as pattern_42
     temp_visited = [[False for _ in range(config.width)]
                     for _ in range(config.height)]
-    pattern_42.apply_pattern_42(
+    pattern = pattern_42.apply_pattern_42(
         my_map, temp_visited, config.width, config.height)
+    if pattern is False:
+        print("\033[1;91mThe maze is too small to include the"
+              " '42' pattern.\n\033[0m")
 
-    path_coords = [config.entry, config.exit]
+    solver = MazeSolver()
+    path_coords, path_str = solver.solve(my_map, config.entry, config.exit)
+    exporter = HexExporter(maze_obj)
+    exporter.write(
+        output_file=config.output_file,
+        entry=config.entry,
+        exit=config.exit,
+        path_str=path_str
+    )
+
     renderer.set_path(path_coords)
 
     return my_map
@@ -49,7 +67,7 @@ def display_maze(
     clear_screen()
     print(renderer.render(my_map, entry, exit_), end="")
     print("\033[1;93m" + "═" * 51 + "\033[0m")
-    print("\033[1;93m   === Ａ－Ｍａｚｅ－ｉｎｇ ===\033[0m")
+    print("\033[1;93m            === Ａ－Ｍａｚｅ－ｉｎｇ ===\033[0m")
     print("\033[1;93m" + "═" * 51 + "\033[0m")
     print()
     print("  \033[1;96m1.\033[0m Re-generar nuevo laberinto\n")
@@ -68,13 +86,10 @@ def run(config: Config) -> None:
 
     renderer = AsciiRenderer(
         theme=themes[theme_index],
-        show_path=True,
-        show_42=True,
     )
 
     my_map = _convert_and_solve(config, renderer, use_seed=True)
     error_msg = ""
-
     while True:
         display_maze(renderer, my_map, config.entry, config.exit, error_msg)
         error_msg = ""
@@ -88,7 +103,6 @@ def run(config: Config) -> None:
             theme_index = (theme_index + 1) % len(themes)
             renderer.set_theme(themes[theme_index])
         elif choice == "4":
-            clear_screen()
             print("¡Gracias por jugar a A-Maze-ing!")
             break
         else:
