@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 import random
 from typing import Tuple, Optional
-from maze.models.maze import Maze
+from maze.models import Maze
 from maze.generator.recursive_backtracker import RecursiveBacktracker
-import maze.pattern_42 as pattern_42
+from maze.utils import pattern_42
+from maze.parser import ConfigError
 
 
 class MazeGenerator:
@@ -20,8 +21,10 @@ class MazeGenerator:
         self.entry: Tuple[int, int] = entry
         self.exit: Tuple[int, int] = exit
 
-        if seed is not None:
-            random.seed(seed)
+        if seed is None:
+            seed = random.randint(1, 999999)
+        self.seed = seed
+        self.rng = random.Random(self.seed)
 
         self.maze: Maze = Maze(self.width, self.height, self.entry, self.exit)
 
@@ -33,6 +36,18 @@ class MazeGenerator:
         )
 
         if pattern_applied:
+            # ── Protección: entry/exit no pueden caer dentro del patrón ──
+            ex, ey = self.entry
+            xx, xy = self.exit
+            if my_visited[ey][ex]:
+                raise ConfigError(
+                    f"Entry {self.entry} falls inside the '42' pattern."
+                )
+            if my_visited[xy][xx]:
+                raise ConfigError(
+                    f"Exit {self.exit} falls inside the '42' pattern."
+                )
+            # ───────────────────────────────────────────────────────────
             from maze.utils.constants import Wall
             for y in range(self.height):
                 for x in range(self.width):
@@ -41,6 +56,6 @@ class MazeGenerator:
                         self.maze.grid[y][x].walls = Wall.ALL
 
     def generate(self) -> Maze:
-        algorithm = RecursiveBacktracker(self.maze)
+        algorithm = RecursiveBacktracker(self.maze, self.rng)
         algorithm.run()
         return self.maze

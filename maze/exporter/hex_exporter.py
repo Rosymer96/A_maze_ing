@@ -1,4 +1,4 @@
-from maze.models.maze import Maze
+from maze.models import Maze
 
 
 class HexExporter:
@@ -16,8 +16,38 @@ class HexExporter:
             for x in range(self.maze.width):
                 cell = self.maze.grid[y][x]
 
+<<<<<<< HEAD
                 hex_char = hex(cell.walls.value)[2:]
 
                 hex_chars.append(hex_char)
 
+=======
+                # El valor de cell.walls ya es un entero gracias a IntFlag
+                #  (ej. 15 para ALL)
+                # La función nativa hex() de Python transforma un entero a hex
+                #  (ej. 15 -> '0xf')
+                # Usamos [2:] para quitar el prefijo '0x' y quedarnos solo con
+                #  el carácter
+                hex_char = hex(cell.walls.value)[2:].upper()
+
+                hex_chars.append(hex_char)
+            hex_chars.append("\n")
+        # Unimos todos los caracteres en una sola línea continua sin espacios
+>>>>>>> dev-rosvela-solver
         return "".join(hex_chars)
+
+    def write(
+        self,
+        output_file: str,
+        entry: tuple[int, int],
+        exit: tuple[int, int],
+        path_str: str
+    ) -> None:
+        """Escribe el fichero completo según el subject."""
+        content = self.export()
+        content += f"\n{entry[0]},{entry[1]}\n"     # entry
+        content += f"{exit[0]},{exit[1]}\n"       # exit
+        content += f"{path_str}"                   # path
+
+        with open(output_file, "w") as f:
+            f.write(content)

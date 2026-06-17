@@ -1,15 +1,18 @@
 import random
 from typing import List, Tuple
-from maze.models.maze import Maze
-from maze.models.cells import Cells
-from maze.utils.constants import Wall, MOVES, OPPOSITE_WALL
+from maze.models import Maze, Cells
+from maze.utils import Wall, MOVES, OPPOSITE_WALL
 
 
 class RecursiveBacktracker:
-    def __init__(self, maze: Maze) -> None:
+    def __init__(self, maze: Maze, rng: random.Random) -> None:
         self.maze: Maze = maze
+        self.rng = rng
 
-    def _get_unvisited_neighbors(self, cells: Cells) -> List[Tuple[Wall, Cells]]:
+    def _get_unvisited_neighbors(
+        self,
+        cells: Cells
+    ) -> List[Tuple[Wall, Cells]]:
         """Busca todas las celdas vecinas que aún no han sido visitadas."""
         neighbors: List[Tuple[Wall, Cells]] = []
 
@@ -31,20 +34,41 @@ class RecursiveBacktracker:
         current_cell.visited = True
         stack: List[Cells] = []
 
+<<<<<<< HEAD
+=======
+    # El bucle continuará hasta que hayamos visitado todo y la pila vuelva
+    # a estar vacía
+>>>>>>> dev-rosvela-solver
         while True:
             unvisited = self._get_unvisited_neighbors(current_cell)
 
             if unvisited:
+<<<<<<< HEAD
                 direction, next_cell = random.choice(unvisited)
+=======
+                # Paso A: Elegir un vecino al azar
+                direction, next_cell = self.rng.choice(unvisited)
+>>>>>>> dev-rosvela-solver
 
                 stack.append(current_cell)
 
+<<<<<<< HEAD
+=======
+    # Paso C: ¡Romper las paredes en ambas celdas para mantener la coherencia!
+>>>>>>> dev-rosvela-solver
                 current_cell.remove_wall(direction)
                 next_cell.remove_wall(OPPOSITE_WALL[direction])
 
                 next_cell.visited = True
                 current_cell = next_cell
+    # Si llegamos a un callejón sin salida, hacemos BACKTRACK:
+    # Sacamos la última celda de la pila y regresamos a ella
             elif stack:
                 current_cell = stack.pop()
+# Si no hay vecinas libres y la pila está vacía... ¡Laberinto terminado!
             else:
+<<<<<<< HEAD
+=======
+
+>>>>>>> dev-rosvela-solver
                 break
