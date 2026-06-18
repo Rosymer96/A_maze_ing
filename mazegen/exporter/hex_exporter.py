@@ -1,4 +1,4 @@
-from maze.models import Maze
+from mazegen.models import Maze
 
 
 class HexExporter:
