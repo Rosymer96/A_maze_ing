@@ -1,27 +1,43 @@
-#!/usr/bin/env python3
-
 from mazegen.utils.constants import Wall
 
 
 class Cells:
+    """Represents a single cell in the maze grid."""
+
     def __init__(self, x: int, y: int) -> None:
+        """Initialize a cell at the given coordinates.
+
+        Args:
+            x: Column index of the cell.
+            y: Row index of the cell.
+        """
+
         self.x: int = x
         self.y: int = y
-        # Al inicio, todas las celdas empiezan completamente cerradas
+        # All walls start closed
         self.walls: Wall = Wall.ALL
-        # Esta variable nos servirá para que el algoritmo sepa si ya pasó por aquí
+        # Tracks whether the generation algorithm has visited this cell
         self.visited: bool = False
 
     def remove_wall(self, wall: Wall) -> None:
-        """Rompe una pared específica usando operaciones de bits."""
-        # El operador ~ invierte los bits.
-        # Si ALL es 1111 y NORTH es 0001, ~NORTH se convierte en 1110.
-        # Al hacer &= (AND), el bit de NORTH pasa a ser 0 (abierto).
+        """Open a specific wall using bitwise operations.
+
+        Args:
+            wall: The wall direction to open.
+        """
+        # ~wall inverts the bits (e.g. NORTH=0001 → ~NORTH=1110)
+        # &= clears the target bit, marking the wall as open
         self.walls &= ~wall
 
     def has_wall(self, wall: Wall) -> bool:
-        """Verifica si una pared específica está cerrada (devuelve True o False)."""
-        # Hacemos una operación AND bit a bit (&).
-        # Si el bit de la pared está en 1, el resultado será mayor que 0 (True).
-        # Si el bit está en 0 (abierto), el resultado será 0 (False).
+        """Check whether a specific wall is closed.
+
+        Args:
+            wall: The wall direction to check.
+
+        Returns:
+            True if the wall is closed, False if open.
+        """
+        # Bitwise AND: returns non-zero (True) if the wall bit is set
+
         return bool(self.walls & wall)
