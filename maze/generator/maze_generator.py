@@ -5,6 +5,7 @@ from maze.models import Maze
 from maze.generator.recursive_backtracker import RecursiveBacktracker
 from maze.utils import pattern_42
 from maze.parser import ConfigError
+from maze.generator.imperfect import ImperfectMaze
 
 
 class MazeGenerator:
@@ -14,12 +15,14 @@ class MazeGenerator:
         height: int,
         entry: Tuple[int, int],
         exit: Tuple[int, int],
+        perfect: bool,
         seed: Optional[int] = None
     ) -> None:
         self.width: int = width
         self.height: int = height
         self.entry: Tuple[int, int] = entry
         self.exit: Tuple[int, int] = exit
+        self.perfect: bool = perfect
 
         if seed is None:
             seed = random.randint(1, 999999)
@@ -36,7 +39,6 @@ class MazeGenerator:
         )
 
         if pattern_applied:
-            # ── Protección: entry/exit no pueden caer dentro del patrón ──
             ex, ey = self.entry
             xx, xy = self.exit
             if my_visited[ey][ex]:
@@ -58,4 +60,12 @@ class MazeGenerator:
     def generate(self) -> Maze:
         algorithm = RecursiveBacktracker(self.maze, self.rng)
         algorithm.run()
+
+        # -----Añadido en el caso de que sea PERFECT=False------
+
+        if not self.perfect:
+            imperfect = ImperfectMaze(self.maze, self.rng)
+            imperfect.apply()
+        # ------------------------------------------------------
+
         return self.maze
