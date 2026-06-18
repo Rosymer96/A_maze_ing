@@ -1,5 +1,5 @@
 import sys
-from mazegen import parse_config, ConfigError, run
+from maze import parse_config, ConfigError, run
 
 
 def main() -> None:

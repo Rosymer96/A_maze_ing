@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from mazegen.utils.constants import Wall
+from maze.utils.constants import Wall
 
 
 class Cells:
