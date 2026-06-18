@@ -1,5 +1,5 @@
 from typing import List, Tuple, Optional
-from maze.models.cells import Cells
+from mazegen.models.cells import Cells
 
 
 class Maze:

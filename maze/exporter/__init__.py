@@ -1,3 +1,3 @@
-from maze.exporter.hex_exporter import HexExporter
+from mazegen.exporter.hex_exporter import HexExporter
 
 __all__ = ["HexExporter"]

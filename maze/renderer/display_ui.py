@@ -1,10 +1,10 @@
 import os
-from maze.renderer import AsciiRenderer, RenderTheme
-from maze.parser import Config
-from maze.generator import MazeGenerator
-from maze.solver import MazeSolver
-from maze.exporter import HexExporter
-import maze.utils as pattern_42
+from mazegen.renderer import AsciiRenderer, RenderTheme
+from mazegen.parser import Config
+from mazegen.generator import MazeGenerator
+from mazegen.solver import MazeSolver
+from mazegen.exporter import HexExporter
+import mazegen.utils as pattern_42
 
 
 def _convert_and_solve(
