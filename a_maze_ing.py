@@ -1,19 +1,33 @@
 import sys
+from mazegen import MazeGenerator, MazeGeneratorError
 from maze import parse_config, ConfigError, run
 
 
 def main() -> None:
     """Entry point del programa."""
     if len(sys.argv) != 2:
-        print("Uso: python3 a_maze_ing.py config.txt")
+        print("Uso: python3 a_maze_ing.py <config.txt>", file=sys.stderr)
         sys.exit(1)
 
     try:
         config = parse_config(sys.argv[1])
-        run(config)
-    except ConfigError as e:
-        print(f"[ERROR] {e}")
+        gen = MazeGenerator(
+            width=config.width,
+            height=config.height,
+            entry=config.entry,
+            exit=config.exit,
+            perfect=config.perfect,
+            seed=config.seed,
+        )
+        gen.generate()
+        run(gen, config.output_file)
+
+    except (ConfigError, MazeGeneratorError) as e:
+        print(f"[ERROR] {e}", file=sys.stderr)
         sys.exit(1)
+    except KeyboardInterrupt:
+        print("User interrupted the program. Exiting...", file=sys.stderr)
+        sys.exit(0)
 
 
 if __name__ == "__main__":

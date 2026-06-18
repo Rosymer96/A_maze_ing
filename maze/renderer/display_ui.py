@@ -1,74 +1,24 @@
 import os
 from maze.renderer import AsciiRenderer, RenderTheme
-from maze.parser import Config
-from maze.generator import MazeGenerator
-from maze.solver import MazeSolver
-from maze.exporter import HexExporter
-import maze.utils as pattern_42
+from mazegen import MazeGenerator, MazeGeneratorError
 
 
-def _convert_and_solve(
-    config: Config,
+def _generate_and_solve_maze(
+    gen: MazeGenerator,
     renderer: AsciiRenderer,
-    use_seed: bool = True
+    output_file: str,
 ) -> list[list[int]]:
     """Generate maze, solve it, and export results.
 
     Returns:
         2D grid representation of the maze.
     """
-
-    seed_value = config.seed if use_seed else None
-
-    generator = MazeGenerator(
-        width=config.width,
-        height=config.height,
-        entry=config.entry,
-        exit=config.exit,
-        perfect=config.perfect,
-        seed=seed_value
-    )
-    maze_obj = generator.generate()
-
-    my_map = []
-    for y in range(config.height):
-        row = []
-        for x in range(config.width):
-            row.append(int(maze_obj.grid[y][x].walls.value))
-        my_map.append(row)
-
-    temp_visited = [[False for _ in range(config.width)]
-                    for _ in range(config.height)]
-    pattern = pattern_42.apply_pattern_42(
-        my_map,
-        temp_visited,
-        config.width,
-        config.height
-    )
-    if pattern is False:
-        print("\033[1;91m"
-              "The maze is too small to include the '42' pattern.\n"
-              "\033[0m")
-
-    solver = MazeSolver()
-
-    path_coords, path_str = solver.solve(
-        my_map,
-        config.entry,
-        config.exit
-    )
-
-    exporter = HexExporter(maze_obj)
-    exporter.write(
-        output_file=config.output_file,
-        entry=config.entry,
-        exit=config.exit,
-        path_str=path_str
-    )
+    path_coords, _ = gen.solve()
 
     renderer.set_path(path_coords)
+    gen.export(output_file)
 
-    return my_map
+    return gen.my_map
 
 
 def clear_screen() -> None:
@@ -100,8 +50,17 @@ def display_maze(
     print("  Opción (1-4): ", end="", flush=True)
 
 
-def run(config: Config) -> None:
-    """Run interactive ASCII maze application."""
+def run(gen: MazeGenerator, output_file: str) -> None:
+    """
+    Run interactive ASCII maze application.
+
+    Args:
+        gen: MazeGenerator instance.
+        output_file: Path to the output file.
+
+    Raises:
+        MazeGeneratorError: If maze generation fails.
+    """
     themes = [RenderTheme.classic(), RenderTheme.neon()]
     theme_index = 0
 
@@ -109,22 +68,38 @@ def run(config: Config) -> None:
         theme=themes[theme_index],
     )
 
-    my_map = _convert_and_solve(config, renderer, use_seed=True)
+    my_map = _generate_and_solve_maze(gen, renderer, output_file)
     error_msg = ""
     while True:
-        display_maze(renderer, my_map, config.entry, config.exit, error_msg)
+        display_maze(renderer, my_map, gen.entry, gen.exit, error_msg)
         error_msg = ""
         choice = input().strip()
 
         if choice == "1":
-            my_map = _convert_and_solve(config, renderer, use_seed=False)
+            try:
+                gen = MazeGenerator(
+                    width=gen.width,
+                    height=gen.height,
+                    entry=gen.entry,
+                    exit=gen.exit,
+                    perfect=gen.perfect,
+                    seed=None
+                )
+                gen.generate()
+                my_map = _generate_and_solve_maze(gen, renderer, output_file)
+            except MazeGeneratorError as e:
+                error_msg = str(e)
+
         elif choice == "2":
             renderer.show_path = not renderer.show_path
+
         elif choice == "3":
             theme_index = (theme_index + 1) % len(themes)
             renderer.set_theme(themes[theme_index])
+
         elif choice == "4":
-            print("¡Gracias por jugar a A-Maze-ing!")
+            print("¡Thanks for playing A-Maze-ing!")
             break
+
         else:
             error_msg = "Invalid option. Please choose between 1 and 4.\n"
