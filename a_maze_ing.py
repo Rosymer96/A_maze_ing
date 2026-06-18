@@ -4,7 +4,14 @@ from maze import parse_config, ConfigError, run
 
 
 def main() -> None:
-    """Entry point del programa."""
+    """Entry point of the A-Maze-ing program.
+
+    Parses the configuration file, generates the maze, and launches
+    the interactive terminal UI.
+
+    Usage:
+        python3 a_maze_ing.py config.txt
+    """
     if len(sys.argv) != 2:
         print("Uso: python3 a_maze_ing.py <config.txt>", file=sys.stderr)
         sys.exit(1)

@@ -98,6 +98,7 @@ def run(gen: MazeGenerator, output_file: str) -> None:
             renderer.set_theme(themes[theme_index])
 
         elif choice == "4":
+            clear_screen()
             print("¡Thanks for playing A-Maze-ing!")
             break
 
