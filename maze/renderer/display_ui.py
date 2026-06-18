@@ -25,6 +25,7 @@ def _convert_and_solve(
         height=config.height,
         entry=config.entry,
         exit=config.exit,
+        perfect=config.perfect,
         seed=seed_value
     )
     maze_obj = generator.generate()
