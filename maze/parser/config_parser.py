@@ -36,7 +36,7 @@ def parse_config(file_path: str) -> Config:
     """
 
     if not os.path.exists(file_path):
-        raise ConfigError(f"File not found: {file_path}, use config.txt")
+        raise ConfigError(f"File not found: {file_path}")
 
     width: int | None = None
     height: int | None = None
@@ -47,6 +47,8 @@ def parse_config(file_path: str) -> Config:
     seed: int | None = None
 
     with open(file_path, "r") as file:
+        seen_keys: set[str] = set()
+
         for line_num, line in enumerate(file, start=1):
             line = line.strip()
 
@@ -54,50 +56,62 @@ def parse_config(file_path: str) -> Config:
                 continue
 
             if "=" not in line:
-                raise ConfigError(f"Syntax error in line {line_num}")
+                raise ConfigError(
+                    f"Invalid configuration at line {line_num}:"
+                    f" expected format 'KEY=VALUE'")
 
             key, value = line.split("=", 1)
             key = key.strip().upper()
+            if key in seen_keys:
+                raise ConfigError(f"Duplicate key '{key}' at line {line_num}")
+            seen_keys.add(key)
+
             value = value.strip()
 
             if key == "WIDTH":
-                width = parse_int(value, "WIDTH", line_num)
+                width = parse_int(value, "WIDTH")
 
             elif key == "HEIGHT":
-                height = parse_int(value, "HEIGHT", line_num)
+                height = parse_int(value, "HEIGHT")
 
             elif key == "ENTRY":
-                entry = parse_coords(value, "ENTRY", line_num)
+                entry = parse_coords(value, "ENTRY")
 
             elif key == "EXIT":
-                exit = parse_coords(value, "EXIT", line_num)
+                exit = parse_coords(value, "EXIT")
 
             elif key == "OUTPUT_FILE":
                 output_file = value
 
             elif key == "PERFECT":
                 if value.lower() not in ("true", "false"):
-                    raise ConfigError("PERFECT must be true/false")
+                    raise ConfigError(f"Invalid value for PERFECT: expected"
+                                      f" 'True' or 'False', got '{value}'")
                 perfect = value.lower() == "true"
 
             elif key == "SEED":
-                seed = parse_int(value, "SEED", line_num)
+                seed = parse_int(value, "SEED")
 
             else:
-                raise ConfigError(f"Unknown key '{key}' in line {line_num}")
+                raise ConfigError(
+                    f"Unknown configuration key '{key}' in line {line_num}"
+                )
 
     if width is None:
-        raise ConfigError("Missing WIDTH in config.txt")
+        raise ConfigError("Missing mandatory key 'WIDTH'")
     if height is None:
-        raise ConfigError("Missing HEIGHT in config.txt")
+        raise ConfigError("Missing mandatory key 'HEIGHT'")
     if entry is None:
-        raise ConfigError("Missing ENTRY in config.txt")
+        raise ConfigError("Missing mandatory key 'ENTRY'")
     if exit is None:
-        raise ConfigError("Missing EXIT in config.txt")
+        raise ConfigError("Missing mandatory key 'EXIT'")
     if output_file is None:
-        raise ConfigError("Missing OUTPUT_FILE in config.txt")
+        raise ConfigError("Missing mandatory key 'OUTPUT_FILE'")
     if perfect is None:
-        raise ConfigError("Missing PERFECT in config.txt")
+        raise ConfigError("Missing mandatory key 'PERFECT'")
+
+    if seed is not None and seed < 0:
+        raise ConfigError("Seed must be >= 0")
     if width <= 0 or height <= 0:
         raise ConfigError("Width/Height must be > 0")
 
@@ -121,14 +135,13 @@ def parse_config(file_path: str) -> Config:
     )
 
 
-def parse_int(value: str, key: str, line: int) -> int:
+def parse_int(value: str, key: str) -> int:
     """
     Convert a string value to an integer with validation.
 
     Args:
         value (str): The string value to convert.
         key (str): Configuration key name (used for error messages).
-        line (int): Line number in the config file (for debugging).
 
     Returns:
         int: Parsed integer value.
@@ -137,48 +150,40 @@ def parse_int(value: str, key: str, line: int) -> int:
         ConfigError: If the value is not a valid integer.
     """
     if not value.isdigit():
-        raise ConfigError(f"{key} must be integer in line {line}")
+        raise ConfigError(
+            f"Invalid value for {key}: expected integer, got '{value}'"
+            )
     return int(value)
 
 
 def parse_coords(
     value: str,
-    key: str,
-    line: int
+    key: str
 ) -> tuple[int, int]:
     """
     Parse coordinate string "x,y" into tuple.
 
-    Parameters
-    ----------
-    value : str
-        Coordinate string (e.g. "3,5").
-    key : str
-        Configuration key name.
-    line : int
-        Line number in config file.
+    Args:
+    value : Coordinate string (e.g. "3,5").
+    key : Configuration key name.
 
-    Returns
-    -------
-    tuple[int, int]
-        Parsed (x, y) coordinates.
+    Returns:
+        Tuple containing (x, y).
 
-    Raises
-    ------
-    ConfigError
-        If format is invalid or values are not integers.
+    Raises:
+        ConfigError: If format is invalid.
     """
     parts = value.split(",")
 
     if len(parts) != 2:
         raise ConfigError(
-            f"{key} must follow format x,y in line {line}"
+            f"Invalid {key} format: expected 'x,y', got {value}"
         )
 
     x_str, y_str = parts
     if not x_str.strip() or not y_str.strip():
         raise ConfigError(
-            f"{key} must follow format x,y in line {line}"
+            f"Invalid {key} format: expected 'x,y', got {value}"
         )
 
     try:
@@ -186,7 +191,6 @@ def parse_coords(
         y = int(y_str)
     except ValueError as exc:
         raise ConfigError(
-            f"{key} coordinates must be integers "
-            f"line {line}"
+            f"Invalid {key}: x and y must be integers"
         ) from exc
     return x, y
