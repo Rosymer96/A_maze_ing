@@ -2,17 +2,30 @@ from collections import deque
 
 
 class MazeSolver:
+    """Solve a maze using breadth-first search (BFS)."""
+
     def solve(
             self,
             my_map: list[list[int]],
             entry: tuple[int, int],
-            exit: tuple[int, int]
+            exit_: tuple[int, int]
     ) -> tuple[list[tuple[int, int]], str]:
-        """
-        Find the shorest path between entry and exit
+        """Find the shortest path between entry and exit.
+
         Args:
-        (completar...)
+            my_map: Maze represented as a grid of wall bitmasks.
+            entry: Starting cell coordinates (x, y).
+            exit_: Target cell coordinates (x, y).
+
+        Returns:
+            A tuple containing:
+                - List of coordinates representing the path.
+                - String encoding of movement directions.
+
+        Raises:
+            ValueError: If the maze is invalid or empty.
         """
+
         height = len(my_map)
         width = len(my_map[0])
 
@@ -36,9 +49,10 @@ class MazeSolver:
         ]
 
         found = False
+
         while path:
             cx, cy = path.popleft()
-            if (cx, cy) == exit:
+            if (cx, cy) == exit_:
                 found = True
                 break
 
@@ -47,36 +61,36 @@ class MazeSolver:
             for bit, dx, dy, _ in directions:
                 nx, ny = cx + dx, cy + dy
 
-            # Verificar si esta en el mapa
+                # Check if the next cell is inside the map
                 if not (0 <= nx < width and 0 <= ny < height):
                     continue
 
-                # Verificar si ya esta visitada
+                # Check if the cell has already been visited
                 if visited[ny][nx]:
                     continue
 
-                # hay pared en esa direccion:
+                # Check if there is a wall in this direction
                 if bits & bit:
                     continue
 
-            # Si la siguiente celda es accesible
+                # If the next cell is accessible, add it to the queue
                 visited[ny][nx] = True
                 parent[(nx, ny)] = (cx, cy)
                 path.append((nx, ny))
 
-    #   Camino hacia atras
+        # Reconstruct path backwards from exit to entry
         if not found:
             return [], ""
 
         coords: list[tuple[int, int]] = []
-        current: tuple[int, int] | None = exit
+        current: tuple[int, int] | None = exit_
 
         while current is not None:
             coords.append(current)
             current = parent.get(current)
         coords.reverse()
 
-        # Convertir a coordenadas
+        # Convert path to movement directions
         letters: list[str] = []
         for i in range(len(coords) - 1):
             x1, y1 = coords[i]
