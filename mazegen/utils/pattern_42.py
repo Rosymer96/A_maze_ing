@@ -67,7 +67,7 @@ def apply_pattern_42(
             if val == 1:
                 rx = start_x + dx
                 ry = start_y + dy
-                my_map[ry][rx] = 15     
-                my_visited[ry][rx] = True   
+                my_map[ry][rx] = 15
+                my_visited[ry][rx] = True
 
     return True
