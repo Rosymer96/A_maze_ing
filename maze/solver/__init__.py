@@ -1,3 +1,3 @@
-from mazegen.solver.solver import MazeSolver
+from maze.solver.solver import MazeSolver
 
 __all__ = ["MazeSolver"]

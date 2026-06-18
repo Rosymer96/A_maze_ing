@@ -1,7 +1,7 @@
 import random
 from typing import List, Tuple
-from mazegen.models import Maze, Cells
-from mazegen.utils import Wall, MOVES, OPPOSITE_WALL
+from maze.models import Maze, Cells
+from maze.utils import Wall, MOVES, OPPOSITE_WALL
 
 
 class ImperfectMaze:
