@@ -34,7 +34,6 @@ def display_maze(
         error_msg: str = "",
 ) -> None:
     """Render maze and UI menu in terminal."""
-    clear_screen()
     print(renderer.render(my_map, entry, exit_), end="")
     print("\033[1;93m" + "═" * 51 + "\033[0m")
     print("\033[1;93m            === Ａ－Ｍａｚｅ－ｉｎｇ ===\033[0m")
@@ -98,7 +97,6 @@ def run(gen: MazeGenerator, output_file: str) -> None:
             renderer.set_theme(themes[theme_index])
 
         elif choice == "4":
-            clear_screen()
             print("¡Thanks for playing A-Maze-ing!")
             break
 

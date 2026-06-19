@@ -60,7 +60,7 @@ class MazeGenerator:
 
         if not pattern_applied:
             print("\033[1;91m"
-                  "The maze is too small to include the '42' pattern.\n"
+                  "\nThe maze is too small to include the '42' pattern.\n"
                   "\033[0m")
 
         ex, ey = self.entry
