@@ -23,7 +23,6 @@ run: install
 debug:
 	@$(PYTHON) -m pdb a_maze_ing.py $(filter-out $@, $(MAKECMDGOALS))
 
-
 %:
 	@:
 
@@ -43,4 +42,3 @@ clean:
 build: install
 	@$(PYTHON) -m build
 	@cp dist/mazegen-1.0.0-py3-none-any.whl .
-
