@@ -272,11 +272,11 @@ The maze is rendered in the terminal using ANSI color codes and Unicode block ch
 
 | Element | Classic | Neon |
 |---|---|---|
-| Walls | Blue | Green |
-| Path | Magenta | Blue |
-| Entry | Green | Cyan |
-| Exit | Red | Yellow |
-| Pattern 42 | White | Magenta |
+| Walls | Blue | Red |
+| Path | Magenta | Yellow |
+| Entry | Green | Magenta |
+| Exit | Red | Green |
+| Pattern 42 | Yellow | Magenta |
 
 ---
 
@@ -286,8 +286,8 @@ The maze is rendered in the terminal using ANSI color codes and Unicode block ch
 
 | Member | Responsibilities |
 |---|---|
-| rosavela | Parser, pattern_42, renderer, solver, display_ui, imperfect maze, hex exporter, a_maze_ing entry point |
-| jreyes-s | Maze models (Cell, Maze), Recursive Backtracker, MazeGenerator, constants |
+| rosavela | Parser, pattern_42, renderer, solver, display_ui, imperfect maze, a_maze_ing entry point |
+| jreyes-s | Maze models (Cell, Maze), Recursive Backtracker, MazeGenerator, constants, hex exporter |
 
 ### Planning
 
@@ -337,7 +337,7 @@ The maze is rendered in the terminal using ANSI color codes and Unicode block ch
 
 ### How AI was used
 
-Claude (Anthropic) was used throughout the project as a technical assistant, specifically for:
+AI was used throughout the project as a technical assistant, specifically for:
 
 - **Documentation** — generating and reviewing Google-style docstrings and inline comments in English
 - **Code review** — checking for Pythonic style, valid type hints, and flake8/mypy compliance
