@@ -7,14 +7,12 @@ from mazegen.utils import Wall, MOVES, OPPOSITE_WALL
 
 class ImperfectMaze:
     """
-    Rompe paredes internas adicionales sobre un laberinto perfecto ya
-    generado, para introducir ciclos (PERFECT=False).
+    Removes additional internal walls from a perfect maze to introduce cycles.
 
-    No toca:
-      - paredes externas (el borde del maze)
-      - celdas marcadas como parte del patrón '42' (cell.visited tras
-        MazeGenerator las deja en True con walls=ALL)
-      - nada que produzca un área abierta de 3x3 o mayor
+    Preserves:
+        - External walls
+        - Cells belonging to the '42' pattern
+        - Areas that would create a fully open 3x3 section
     """
 
     def __init__(
@@ -23,12 +21,31 @@ class ImperfectMaze:
             rng: random.Random,
             extra_wall_removal_chance: float = 0.12
     ) -> None:
+        """
+        Initialize an imperfect maze generator.
+
+        Args:
+            maze: Maze instance to modify.
+            rng: Random generator used for reproducible changes.
+            extra_wall_removal_chance: Probability of removing a
+            candidate wall.
+        """
+
         self.maze: Maze = maze
         self.rng = rng
         self.chance = extra_wall_removal_chance
 
     def _is_pattern_cell(self, cell: Cells) -> bool:
-        """Una celda del patrón 42 tiene todas las paredes y nunca se toca."""
+        """
+        Check if a cell belongs to the protected 42 pattern.
+
+        Args:
+            cell: Cell to check.
+
+        Returns:
+            True if the cell is part of the pattern, otherwise False.
+        """
+
         return cell.walls == Wall.ALL and cell.visited
 
     def _creates_3x3_open_area(
@@ -38,17 +55,17 @@ class ImperfectMaze:
         y2: int
     ) -> bool:
         """
-        Comprueba si abrir la pared entre (x1,y1) y (x2,y2) generaría
-        un bloque de 3x3 celdas totalmente interconectadas.
+        Check if removing a wall would create a fully open 3x3 area.
 
-        Estrategia simple: para cada ventana 3x3 que contenga ambas
-        celdas, contamos cuántas de las 12 paredes internas de esa
-        ventana estarían abiertas DESPUÉS del cambio. Si las 12 lo
-        estarían, es una zona 3x3 completamente abierta.
+        Args:
+            x1: X coordinate of first cell.
+            y1: Y coordinate of first cell.
+            x2: X coordinate of second cell.
+            y2: Y coordinate of second cell.
+
+        Returns:
+            True if the change creates an open 3x3 area.
         """
-
-        # Las ventanas 3x3 candidatas son las que tienen su esquina
-        # superior-izquierda en un rango que cubra ambas celdas.
         min_x = min(x1, x2)
         min_y = min(y1, y2)
 
@@ -69,7 +86,20 @@ class ImperfectMaze:
         opened_x2: int,
         opened_y2: int
     ) -> bool:
-        """Comprueba una ventana 3x3 concreta con esquina en (top_x, top_y)."""
+        """
+        Check if a 3x3 window would be fully connected.
+
+        Args:
+            top_x: Top-left X coordinate of the window.
+            top_y: Top-left Y coordinate of the window.
+            opened_x1: X coordinate of first modified cell.
+            opened_y1: Y coordinate of first modified cell.
+            opened_x2: X coordinate of second modified cell.
+            opened_y2: Y coordinate of second modified cell.
+
+        Returns:
+            True if all internal walls would be open.
+        """
         cells_in_window: List[Cells] = []
         for dy in range(3):
             for dx in range(3):
@@ -78,20 +108,16 @@ class ImperfectMaze:
                     return False  # ventana fuera del mapa, no aplica
                 cells_in_window.append(cell)
 
-        # Para cada pareja de celdas horizontalmente o verticalmente
-        # adyacentes DENTRO de la ventana, comprobamos si la pared
-        # entre ellas estaría abierta (considerando el cambio hipotético).
         for cell in cells_in_window:
             for direction, (dx, dy) in MOVES.items():
                 nx, ny = cell.x + dx, cell.y + dy
                 neighbor = self.maze.get_cell(nx, ny)
                 if neighbor is None or neighbor not in cells_in_window:
-                    continue  # vecino fuera de la ventana, no cuenta
+                    continue
 
                 wall_open = not cell.has_wall(direction)
 
-                # Si esta es justo la pared que estamos planteando abrir,
-                # la tratamos como abierta para esta simulación.
+                # Simulate opening the selected wall.
                 pair_a = (cell.x, cell.y) == (opened_x1, opened_y1) and \
                     (nx, ny) == (opened_x2, opened_y2)
                 pair_b = (cell.x, cell.y) == (opened_x2, opened_y2) and \
@@ -100,12 +126,14 @@ class ImperfectMaze:
                     wall_open = True
 
                 if not wall_open:
-                    return False  # hay al menos una pared cerrada, no es 3x3
+                    return False
 
         return True
 
     def apply(self) -> None:
-        """Recorre el maze y rompe paredes internas extra al azar."""
+        """
+        Remove random internal walls while preserving maze constraints.
+        """
         candidates: List[Tuple[Wall, Cells, Cells]] = []
 
         for row in self.maze.grid:
@@ -116,14 +144,12 @@ class ImperfectMaze:
                 for direction, (dx, dy) in MOVES.items():
                     neighbor = self.maze.get_cell(cell.x + dx, cell.y + dy)
 
-                    # Sin vecino = sería pared exterior, nunca se toca
                     if neighbor is None:
                         continue
 
                     if self._is_pattern_cell(neighbor):
                         continue
 
-                    # Solo nos interesan paredes que AÚN están cerradas
                     if not cell.has_wall(direction):
                         continue
 
