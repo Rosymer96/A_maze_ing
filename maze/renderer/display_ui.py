@@ -39,14 +39,14 @@ def display_maze(
     print("\033[1;93m            === Ａ－Ｍａｚｅ－ｉｎｇ ===\033[0m")
     print("\033[1;93m" + "═" * 51 + "\033[0m")
     print()
-    print("  \033[1;96m1.\033[0m Re-generar nuevo laberinto\n")
-    print("  \033[1;96m2.\033[0m Mostrar/Ocultar camino de solución\n")
-    print("  \033[1;96m3.\033[0m Cambiar colores de paredes\n")
-    print("  \033[1;96m4.\033[0m Salir\n")
+    print("  \033[1;96m1.\033[0m Generate a new maze\n")
+    print("  \033[1;96m2.\033[0m Show/Hide solution path\n")
+    print("  \033[1;96m3.\033[0m Change wall colors\n")
+    print("  \033[1;96m4.\033[0m Exit\n")
     print("\033[1;93m" + "═" * 51 + "\033[0m")
     if error_msg:
         print(f"  \033[1;91m{error_msg}\033[0m")
-    print("  Opción (1-4): ", end="", flush=True)
+    print("  Option (1-4): ", end="", flush=True)
 
 
 def run(gen: MazeGenerator, output_file: str) -> None:
@@ -60,7 +60,7 @@ def run(gen: MazeGenerator, output_file: str) -> None:
     Raises:
         MazeGeneratorError: If maze generation fails.
     """
-    themes = [RenderTheme.classic(), RenderTheme.neon()]
+    themes = [RenderTheme.classic(), RenderTheme.neon(), RenderTheme.neon_sec()]
     theme_index = 0
 
     renderer = AsciiRenderer(

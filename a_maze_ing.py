@@ -33,7 +33,7 @@ def main() -> None:
         print(f"[ERROR] {e}", file=sys.stderr)
         sys.exit(1)
     except KeyboardInterrupt:
-        print("User interrupted the program. Exiting...", file=sys.stderr)
+        print("\nUser interrupted the program. Exiting...", file=sys.stderr)
         sys.exit(0)
 
 
