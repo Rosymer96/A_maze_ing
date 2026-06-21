@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 from mazegen import MazeGenerator, MazeGeneratorError
 from maze import parse_config, ConfigError, run
@@ -13,7 +14,7 @@ def main() -> None:
         python3 a_maze_ing.py config.txt
     """
     if len(sys.argv) != 2:
-        print("Uso: python3 a_maze_ing.py <config.txt>", file=sys.stderr)
+        print("Usage: python3 a_maze_ing.py <config.txt>", file=sys.stderr)
         sys.exit(1)
 
     try:

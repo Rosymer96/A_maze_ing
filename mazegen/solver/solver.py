@@ -21,9 +21,6 @@ class MazeSolver:
             A tuple containing:
                 - List of coordinates representing the path.
                 - String encoding of movement directions.
-
-        Raises:
-            ValueError: If the maze is invalid or empty.
         """
 
         height = len(my_map)
