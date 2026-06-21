@@ -19,3 +19,11 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["mazegen"]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "**/.*venv",
+  "**/venv",
+  "**/env",
+  "**/.env",
+]

@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by rosavela, jreyes-s.*
+*This project has been created as part of the 42 curriculum by rosvela, jreyes-s.*
 
 # A-Maze-ing
 
@@ -276,18 +276,20 @@ The maze is rendered in the terminal using ANSI color codes and Unicode block ch
 
 1. **Re-generate** — generate a new random maze
 2. **Show/Hide path** — toggle the solution path visibility
-3. **Change colors** — cycle between color themes (Classic, Neon)
+3. **Change color theme** — cycle between color themes (Classic, Neon, Neon Secondary)
 4. **Quit**
 
 ### Color themes
 
-| Element | Classic | Neon |
-|---|---|---|
-| Walls | Blue | Red |
-| Path | Magenta | Yellow |
-| Entry | Green | Magenta |
-| Exit | Red | Green |
-| Pattern 42 | Yellow | Magenta |
+The ASCII renderer supports different color themes that can be selected during execution.
+
+| Element | Classic | Neon | Neon Secondary |
+|---|---|---|---|
+| Walls | Blue | Magenta | Yellow |
+| Path | Magenta | Yellow | Blue |
+| Entry | Green | Green | Green |
+| Exit | Red | Red | Red |
+| Pattern 42 | Yellow | White | Magenta |
 
 ---
 
@@ -324,7 +326,6 @@ The maze is rendered in the terminal using ANSI color codes and Unicode block ch
 - **VS Code** — main editor
 - **Git** — version control and branch management
 - **Slack** — team communication
-- **Claude (Anthropic)** — AI assistant (see Resources)
 
 ---
 
@@ -334,7 +335,6 @@ The maze is rendered in the terminal using ANSI color codes and Unicode block ch
 
 - [Maze generation algorithms — Wikipedia](https://en.wikipedia.org/wiki/Maze_generation_algorithm)
 - [Recursive Backtracker explained — Jamis Buck](http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracker)
-- [Think Labyrinth — maze algorithms](http://www.astrolog.org/labyrnth/algrithm.htm)
 
 ### BFS and pathfinding
 

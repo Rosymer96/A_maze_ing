@@ -39,9 +39,9 @@ def display_maze(
     print("\033[1;93m            === Ａ－Ｍａｚｅ－ｉｎｇ ===\033[0m")
     print("\033[1;93m" + "═" * 51 + "\033[0m")
     print()
-    print("  \033[1;96m1.\033[0m Generate a new maze\n")
+    print("  \033[1;96m1.\033[0m Re-generate a new maze\n")
     print("  \033[1;96m2.\033[0m Show/Hide solution path\n")
-    print("  \033[1;96m3.\033[0m Change wall colors\n")
+    print("  \033[1;96m3.\033[0m Change color theme\n")
     print("  \033[1;96m4.\033[0m Exit\n")
     print("\033[1;93m" + "═" * 51 + "\033[0m")
     if error_msg:
@@ -101,7 +101,7 @@ def run(gen: MazeGenerator, output_file: str) -> None:
             renderer.set_theme(themes[theme_index])
 
         elif choice == "4":
-            print("¡Thanks for playing A-Maze-ing!")
+            print("Thanks for playing A-Maze-ing!")
             break
 
         else:

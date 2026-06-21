@@ -31,6 +31,7 @@ class RenderTheme:
             pattern42="\033[97m█\033[0m",
         )
 
+    @staticmethod
     def neon_sec() -> "RenderTheme":
         """Return an alternative neon-style color theme."""
         return RenderTheme(
@@ -38,7 +39,7 @@ class RenderTheme:
             path="\033[94m█\033[0m",
             entry="\033[92m█\033[0m",
             exit="\033[91m█\033[0m",
-            pattern42="\033[91m█\033[0m",
+            pattern42="\033[35m█\033[0m",
         )
 
 

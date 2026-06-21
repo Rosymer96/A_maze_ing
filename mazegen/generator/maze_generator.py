@@ -25,7 +25,6 @@ class MazeGenerator:
         exit: Tuple[int, int],
         perfect: bool,
         seed: Optional[int] = None,
-        my_map: Optional[list[list[int]]] = None
     ) -> None:
         self.width: int = width
         self.height: int = height
