@@ -48,7 +48,7 @@ class ImperfectMaze:
         total_cells = self.maze.width * self.maze.height
 
         if total_cells <= 25:
-            return 0.6
+            return 0.4
         elif total_cells <= 100:
             return 0.3
         else:
@@ -124,7 +124,7 @@ class ImperfectMaze:
             for dx in range(3):
                 cell = self.maze.get_cell(top_x + dx, top_y + dy)
                 if cell is None:
-                    return False  # ventana fuera del mapa, no aplica
+                    return False
                 cells_in_window.append(cell)
 
         for cell in cells_in_window:

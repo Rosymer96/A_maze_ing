@@ -39,6 +39,6 @@ clean:
 	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 	@rm -rf .mypy_cache build *.egg-info
 
-build: install
+build:
 	@$(PYTHON) -m build
 	@cp dist/mazegen-1.0.0-py3-none-any.whl .
