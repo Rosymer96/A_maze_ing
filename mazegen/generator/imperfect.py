@@ -19,7 +19,7 @@ class ImperfectMaze:
             self,
             maze: Maze,
             rng: random.Random,
-            extra_wall_removal_chance: float = 0.12
+            extra_wall_removal_chance: float | None = None
     ) -> None:
         """
         Initialize an imperfect maze generator.
@@ -33,7 +33,26 @@ class ImperfectMaze:
 
         self.maze: Maze = maze
         self.rng = rng
-        self.chance = extra_wall_removal_chance
+
+        if extra_wall_removal_chance is None:
+            self.chance = self._adaptative_chance()
+        else:
+            self.chance = extra_wall_removal_chance
+
+    def _adaptative_chance(self) -> float:
+        """
+        Increase wall-break probability for small mazes, where few
+        candidates exist and most attempts get rejected due to
+        3x3 area restrictions.
+        """
+        total_cells = self.maze.width * self.maze.height
+
+        if total_cells <= 25:
+            return 0.6
+        elif total_cells <= 100:
+            return 0.3
+        else:
+            return 0.12
 
     def _is_pattern_cell(self, cell: Cells) -> bool:
         """
