@@ -24,10 +24,10 @@ class RenderTheme:
     def neon() -> "RenderTheme":
         """Return an alternative neon-style color theme."""
         return RenderTheme(
-            wall="\033[91m█\033[0m",
+            wall="\033[95m█\033[0m",
             path="\033[93m█\033[0m",
-            entry="\033[35m█\033[0m",
-            exit="\033[92m█\033[0m",
+            entry="\033[92m█\033[0m",
+            exit="\033[91m█\033[0m",
             pattern42="\033[97m█\033[0m",
         )
 
@@ -35,9 +35,9 @@ class RenderTheme:
         """Return an alternative neon-style color theme."""
         return RenderTheme(
             wall="\033[93m█\033[0m",
-            path="\033[97m█\033[0m",
+            path="\033[94m█\033[0m",
             entry="\033[92m█\033[0m",
-            exit="\033[35m█\033[0m",
+            exit="\033[91m█\033[0m",
             pattern42="\033[91m█\033[0m",
         )
 
