@@ -16,7 +16,7 @@ install:
 	@$(PIP) install -e ".[dev]" > /dev/null 2>&1
 	@echo "Done."
 
-run: install
+run:
 	@clear
 	@$(PYTHON) a_maze_ing.py $(filter-out $@, $(MAKECMDGOALS))
 
