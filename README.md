@@ -29,10 +29,12 @@ Key features:
 make install
 ```
 
+This automatically creates a `.venv` virtual environment, installs dependencies, and builds the package.
+
 ### Run
 
 ```bash
-make run
+make run config.txt
 ```
 
 Or manually:
@@ -101,11 +103,13 @@ SEED=42
 
 ### Validation rules
 
-- `WIDTH` and `HEIGHT` must be positive integers
+- `WIDTH` must be between 5 and 100
+- `HEIGHT` must be between 5 and 50
 - `ENTRY` and `EXIT` must be within bounds and different from each other
 - `ENTRY` or `EXIT` cannot fall inside the "42" pattern
-- `PERFECT` must be `true` or `false` (case insensitive)
-- Unknown keys raise a configuration error
+- `PERFECT` must be exactly `True` or `False`
+- Unknown or duplicate keys raise a configuration error
+- `SEED` must be >= 0 if provided
 
 ---
 
@@ -155,18 +159,25 @@ BFS guarantees the **shortest path** because it explores cells level by level �
 
 When `PERFECT=False`, the `ImperfectMaze` class applies a **braiding** step after generation.
 
+The goal of this step is to introduce loops by removing selected internal walls while preserving the maze structure.
+
 How it works:
 
-1. Collect all interior closed walls between non-pattern cells as candidates
-2. Shuffle the list using the seeded `rng` for reproducibility
-3. For each candidate wall, simulate opening it and check:
-   - It does not touch the grid border
-   - Neither adjacent cell belongs to the "42" pattern
-   - Opening it does not create a fully open 3×3 area
-4. If all checks pass, open the wall — otherwise skip it
-5. Continue until approximately 12% of candidate walls have been opened
+1. Collect all internal closed walls between non-pattern cells as candidates
+2. Shuffle the candidate list using the seeded `rng` to keep results reproducible
+3. For each candidate wall, evaluate whether it can be removed:
+   - The wall must not be a border wall
+   - Neither adjacent cell can belong to the "42" pattern
+   - Removing the wall must not create a fully open 3×3 area
+4. If all checks pass, remove the wall — otherwise skip it
+5. Continue until the configured amount of wall removal attempts is completed
 
-The result is a maze with loops where multiple paths exist between some pairs of cells, making it harder to solve visually.
+The amount of removed walls is controlled using an adaptive probability based on the maze size:
+- Small mazes use a higher probability because they have fewer candidate walls
+- Larger mazes use a lower probability to avoid destroying the maze structure
+
+The result is an imperfect maze containing loops, where multiple paths may exist between some pairs of cells, making the maze harder to solve visually while preserving important constraints.
+
 
 ## Output File Format
 
