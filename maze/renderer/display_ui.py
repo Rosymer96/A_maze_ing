@@ -60,7 +60,11 @@ def run(gen: MazeGenerator, output_file: str) -> None:
     Raises:
         MazeGeneratorError: If maze generation fails.
     """
-    themes = [RenderTheme.classic(), RenderTheme.neon(), RenderTheme.neon_sec()]
+    themes = [
+        RenderTheme.classic(),
+        RenderTheme.neon(),
+        RenderTheme.neon_sec()
+    ]
     theme_index = 0
 
     renderer = AsciiRenderer(

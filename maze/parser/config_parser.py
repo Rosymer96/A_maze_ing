@@ -112,11 +112,11 @@ def parse_config(file_path: str) -> Config:
 
     if seed is not None and seed < 0:
         raise ConfigError("Seed must be >= 0")
-    if width <= 0 or width > 100:
-        raise ConfigError("Width must be > 0 and <= 100")
+    if width < 5 or width > 100:
+        raise ConfigError("Width must be between 5 and 100")
 
-    if height <= 0 or height > 50:
-        raise ConfigError("Height must be > 0 and <= 50")
+    if height < 5 or height > 50:
+        raise ConfigError("Height must be between 5 and 50")
 
     if entry == exit:
         raise ConfigError("Entry and Exit cannot be the same")
