@@ -35,6 +35,7 @@ def display_maze(
 ) -> None:
     """Render maze and UI menu in terminal."""
     print(renderer.render(my_map, entry, exit_), end="")
+    print()
     print("\033[1;93m" + "═" * 51 + "\033[0m")
     print("\033[1;93m            === Ａ－Ｍａｚｅ－ｉｎｇ ===\033[0m")
     print("\033[1;93m" + "═" * 51 + "\033[0m")
@@ -74,6 +75,7 @@ def run(gen: MazeGenerator, output_file: str) -> None:
     my_map = _generate_and_solve_maze(gen, renderer, output_file)
     error_msg = ""
     while True:
+        print()
         display_maze(renderer, my_map, gen.entry, gen.exit, error_msg)
         error_msg = ""
         choice = input().strip()
