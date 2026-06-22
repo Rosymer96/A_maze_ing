@@ -14,7 +14,11 @@ def main() -> None:
         python3 a_maze_ing.py config.txt
     """
     if len(sys.argv) != 2:
-        print("Usage: python3 a_maze_ing.py <config.txt>", file=sys.stderr)
+        print(
+            "Usage: python3 a_maze_ing.py <config.txt>\n"
+            "   or: make run <config.txt>",
+            file=sys.stderr
+        )
         sys.exit(1)
 
     try:
