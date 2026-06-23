@@ -81,7 +81,20 @@ def parse_config(file_path: str) -> Config:
                 exit = parse_coords(value, "EXIT")
 
             elif key == "OUTPUT_FILE":
-                output_file = value
+                if value.endswith(".txt"):
+                    output_file = value
+
+                    if value == file_path:
+                        raise ConfigError(
+                            f"Invalid configuration for OUTPUT_FILE: must be "
+                            f"different from the config file '{value}'"
+                        )
+
+                else:
+                    raise ConfigError(
+                        f"Invalid configuration for OUTPUT_FILE: expected a "
+                        f" .txt file, got '{value}'"
+                    )
 
             elif key == "PERFECT":
                 if value.lower() not in ("true", "false"):
