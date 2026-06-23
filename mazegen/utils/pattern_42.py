@@ -1,6 +1,6 @@
 # Pixel grid for digit '4' (3 cols x 5 rows)
 DIGIT_4 = [
-    [1, 0, 1],
+    [1, 0, 0],
     [1, 0, 1],
     [1, 1, 1],
     [0, 0, 1],
