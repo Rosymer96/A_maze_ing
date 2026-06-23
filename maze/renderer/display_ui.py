@@ -34,6 +34,8 @@ def display_maze(
         error_msg: str = "",
 ) -> None:
     """Render maze and UI menu in terminal."""
+    clear_screen()
+    print()
     print(renderer.render(my_map, entry, exit_), end="")
     print()
     print("\033[1;93m" + "═" * 51 + "\033[0m")
