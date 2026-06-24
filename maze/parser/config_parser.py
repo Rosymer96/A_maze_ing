@@ -100,7 +100,7 @@ def parse_config(file_path: str) -> Config:
                 if value.lower() not in ("true", "false"):
                     raise ConfigError(f"Invalid value for PERFECT: expected"
                                       f" 'True' or 'False', got '{value}'")
-                perfect = value.lower() == "True"
+                perfect = value.lower() == "true"
 
             elif key == "SEED":
                 seed = parse_int(value, "SEED")

@@ -32,9 +32,16 @@ def display_maze(
         entry: tuple[int, int],
         exit_: tuple[int, int],
         error_msg: str = "",
+        applied_42: bool | None = None
 ) -> None:
     """Render maze and UI menu in terminal."""
     clear_screen()
+    if applied_42 is False:
+        print(
+            "\033[1;91m"
+            "\nThe maze is too small to include the '42' pattern.\n"
+            "\033[0m"
+        )
     print()
     print(renderer.render(my_map, entry, exit_), end="")
     print()
@@ -73,12 +80,19 @@ def run(gen: MazeGenerator, output_file: str) -> None:
     renderer = AsciiRenderer(
         theme=themes[theme_index],
     )
-
     my_map = _generate_and_solve_maze(gen, renderer, output_file)
     error_msg = ""
     while True:
+        clear_screen()
         print()
-        display_maze(renderer, my_map, gen.entry, gen.exit, error_msg)
+        display_maze(
+            renderer,
+            my_map,
+            gen.entry,
+            gen.exit,
+            error_msg,
+            gen.applied_42
+        )
         error_msg = ""
         choice = input().strip()
 
