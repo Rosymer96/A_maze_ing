@@ -39,6 +39,7 @@ class MazeGenerator:
         self._solution: Optional[tuple[list[tuple[int, int]], str]] = None
 
         self.maze: Maze = Maze(self.width, self.height, self.entry, self.exit)
+        self.applied_42 = True
         self._apply_pattern_42_to_maze()
 
     def _apply_pattern_42_to_maze(self) -> None:
@@ -58,9 +59,7 @@ class MazeGenerator:
         )
 
         if not pattern_applied:
-            print("\033[1;91m"
-                  "\nThe maze is too small to include the '42' pattern.\n"
-                  "\033[0m")
+            self.applied_42 = False
 
         ex, ey = self.entry
         xx, xy = self.exit
