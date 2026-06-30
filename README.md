@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by rosvela, jreyes-s.*
+*This project has been created as part of the 42 curriculum by rosvela, jreyes-s. Version final*
 
 # A-Maze-ing
 
